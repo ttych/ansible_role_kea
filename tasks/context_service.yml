@@ -1,0 +1,101 @@
+---
+
+# with service_dir
+
+- block:
+    - name: set kea_service_dir
+      set_fact:
+        kea_service_dir: "{{ service_dir }}/{{ kea_name }}"
+
+    - name: set kea_conf_dir
+      set_fact:
+        kea_conf_dir: "{{ kea_service_dir }}/etc"
+      when: kea_conf_dir is not defined or not kea_conf_dir
+
+    - name: set kea_log_dir
+      set_fact:
+        kea_log_dir: "{{ kea_service_dir }}/log"
+      when: kea_log_dir is not defined or not kea_log_dir
+
+    - name: set kea_var_dir
+      set_fact:
+        kea_var_dir: "{{ kea_service_dir }}/var"
+      when: kea_var_dir is not defined or not kea_var_dir
+
+    - name: set kea_run_dir
+      set_fact:
+        kea_run_base_dir: "{{ kea_service_dir }}/run"
+      when:
+        - kea_run_dir is not defined or not kea_run_dir
+        - ansible_system != "Linux"
+
+    - name: set kea_run_dir on Linux
+      set_fact:
+        kea_run_base_dir: "{{ run_dir }}"
+        kea_run_dir_mode: "0755"
+        kea_run_lock_dir_mode: "0755"
+      when:
+        - kea_run_dir is not defined or not kea_run_dir
+        - ansible_system == "Linux"
+
+  when: service_dir is defined and service_dir
+
+
+# without service_dir
+
+- block:
+    - name: set kea_service_dir
+      set_fact:
+        kea_service_dir: "{{ kea_home }}"
+
+    - name: set kea_conf_dir
+      set_fact:
+        kea_conf_dir: "/etc/kea"
+      when: kea_conf_dir is not defined or not kea_conf_dir
+
+    - name: set kea_log_dir
+      set_fact:
+        kea_log_dir: "/var/log/{{ kea_name }}"
+      when: kea_log_dir is not defined or not kea_log_dir
+
+    - name: set kea_var_dir
+      set_fact:
+        kea_var_dir: "/var/lib/{{ kea_name }}"
+      when: kea_var_dir is not defined or not kea_var_dir
+
+    - name: set kea_run_dir on Linux
+      set_fact:
+        kea_run_base_dir: "{{ run_dir }}"
+        kea_run_dir_mode: "0755"
+        kea_run_lock_dir_mode: "0755"
+      when:
+        - kea_run_dir is not defined or not kea_run_dir
+
+  when: service_dir is not defined or not service_dir
+
+
+- block:
+    - name: set kea_service_type to system
+      set_fact:
+        kea_service_type: "{{ ansible_service_mgr }}"
+
+  when: kea_service_type is not defined or not kea_service_type
+
+
+# - name: include service variables
+#   include_vars:
+#     dir: vars
+#     files_matching: "service.yml"
+#   when: has_service|d(false)
+
+# - name: include daemontools variables
+#   include_vars:
+#     dir: vars
+#     files_matching: "daemontools.yml"
+#   when: has_daemontools|d(false)
+
+# - name: include runit variables
+#   include_vars:
+#     dir: vars
+#     files_matching: "runit.yml"
+#   when: (has_runit|d(false)) and not (has_daemontools|d(false))

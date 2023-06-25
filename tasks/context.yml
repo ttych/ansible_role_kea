@@ -1,0 +1,13 @@
+---
+
+- name: include distribution specific variables
+  include_vars:
+    dir: vars
+    files_matching: "{{ item }}"
+  loop:
+    - "common.yml"
+    - "{{ ansible_system }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_distribution + '_' + ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution + '_' + ansible_distribution_version }}.yml"

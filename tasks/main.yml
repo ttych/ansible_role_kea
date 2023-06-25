@@ -1,0 +1,22 @@
+---
+
+- block:
+    - include_tasks: context.yml
+
+    - include_tasks: context_service.yml
+
+    - include_tasks: setup_workspace.yml
+
+    - include_tasks: setup_distribution.yml
+
+    - include_tasks: setup_configuration.yml
+
+    - include_tasks: setup_protection.yml
+
+    - include_tasks: setup_service.yml
+
+    - name: "set has_kea to true"
+      set_fact:
+        "has_kea": true
+
+  when: want_kea

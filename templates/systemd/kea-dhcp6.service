@@ -1,0 +1,22 @@
+[Unit]
+Description=Kea IPv6 DHCP daemon
+Documentation=man:kea-dhcp6(8)
+Wants=network-online.target
+After=network-online.target
+After=time-sync.target
+
+[Service]
+User={{ kea_user }}
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+Environment="KEA_LOCKFILE_DIR={{ kea_run_lock_dir }}"
+Environment="PATH={{ path_defaults | join(':') }}"
+ConfigurationDirectory={{ kea_name }}
+RuntimeDirectory={{ kea_run_subdir }} {{ kea_run_lock_subdir }}
+RuntimeDirectoryPreserve=yes
+LogsDirectory={{ kea_name }}
+LogsDirectoryMode=0750
+StateDirectory={{ kea_name }}
+ExecStart={{ kea_dist_bin_dhcp6 }} -c "{{ kea_dhcp6_conf_path }}"
+
+[Install]
+WantedBy=multi-user.target

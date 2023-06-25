@@ -1,0 +1,42 @@
+abi <abi/3.0>,
+
+include <tunables/global>
+
+profile kea-ctrl-agent {{ kea_dist_bin_ctrl_agent }} {
+  include <abstractions/base>
+
+  network inet stream,
+
+  /etc/kea/ r,
+  /etc/kea/** r,
+  /usr/sbin/kea-ctrl-agent mr,
+
+  {{ kea_conf_dir }}/ r,
+  {{ kea_conf_dir }}/** r,
+  {{ kea_dist_bin_ctrl_agent }} mr,
+
+  owner /run/kea/kea-ctrl-agent.kea-ctrl-agent.pid w,
+  owner /run/lock/kea/logger_lockfile rwk,
+
+  owner {{ kea_run_dir }}/kea-ctrl-agent.kea-ctrl-agent.pid w,
+  owner {{ kea_run_lock_dir }}/logger_lockfile rwk,
+
+  # Control sockets
+  # Before LP: #1863100, these were in /tmp. For compatibility, let's keep both
+  # locations
+  owner /{tmp,run/kea}/kea-ddns-ctrl-socket rw,
+  owner /{tmp,run/kea}/kea4-ctrl-socket rw,
+  owner /{tmp,run/kea}/kea6-ctrl-socket rw,
+
+  owner {{ kea_run_dir }}/kea-ddns-ctrl-socket rw,
+  owner {{ kea_run_dir }}/kea4-ctrl-socket rw,
+  owner {{ kea_run_dir }}/kea6-ctrl-socket rw,
+
+  owner /var/log/kea/kea-ctrl-agent.log rw,
+  owner /var/log/kea/kea-ctrl-agent.log.[0-9]* rw,
+  owner /var/log/kea/kea-ctrl-agent.log.lock rwk,
+
+  owner {{ kea_ctrl_agent_log_file }} rw,
+  owner {{ kea_ctrl_agent_log_file }}.[0-9]* rw,
+  owner {{ kea_ctrl_agent_log_file }}.lock rwk,
+}

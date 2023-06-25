@@ -1,0 +1,135 @@
+---
+
+# systemd
+
+# systemd : kea-ctrl-agent
+- name: configure kea-ctrl-agent service through systemd
+  block:
+    - name: deploy systemd service kea-ctrl-agent
+      template:
+        src: "systemd/kea-ctrl-agent.service"
+        dest: "{{ systemd_system_lib_dir }}/{{ kea_service_ctrl_agent_name }}.service"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0644"
+      register: t_kea_service_ctr_agent_conf
+
+    - name: activate systemd service
+      systemd:
+        name: "{{ kea_service_ctrl_agent_name }}.service"
+        enabled: true
+        state: started
+        masked: no
+        daemon_reload: true
+
+    - name: reload systemd service
+      systemd:
+        name: "{{ kea_service_ctrl_agent_name }}.service"
+        state: restarted
+        daemon_reload: true
+      when: t_kea_service_ctr_agent_conf.changed or t_kea_conf_kea_ctrl_agent.changed
+
+  when:
+    - kea_want_ctrl_agent
+    - kea_service_type == 'systemd'
+
+
+# systemd : kea-dhcp4
+- name: configure kea-dhcp4 service through systemd
+  block:
+    - name: deploy systemd service kea-dhcp4
+      template:
+        src: "systemd/kea-dhcp4.service"
+        dest: "{{ systemd_system_lib_dir }}/{{ kea_service_dhcp4_name }}.service"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0644"
+      register: t_kea_service_dhcp4_conf
+
+    - name: activate systemd service
+      systemd:
+        name: "{{ kea_service_dhcp4_name }}.service"
+        enabled: true
+        state: started
+        masked: no
+        daemon_reload: true
+
+    - name: reload systemd service
+      systemd:
+        name: "{{ kea_service_dhcp4_name }}.service"
+        state: restarted
+        daemon_reload: true
+      when: t_kea_service_dhcp4_conf.changed or t_kea_conf_kea_dhcp4.changed
+
+  when:
+    - kea_want_dhcp4
+    - kea_service_type == 'systemd'
+
+
+# systemd : kea-dhcp6
+- name: configure kea-dhcp6 service through systemd
+  block:
+    - name: deploy systemd service kea-dhcp6
+      template:
+        src: "systemd/kea-dhcp6.service"
+        dest: "{{ systemd_system_lib_dir }}/{{ kea_service_dhcp6_name }}.service"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0644"
+      register: t_kea_service_dhcp6_conf
+
+    - name: activate systemd service
+      systemd:
+        name: "{{ kea_service_dhcp6_name }}.service"
+        enabled: true
+        state: started
+        masked: no
+        daemon_reload: true
+
+    - name: reload systemd service
+      systemd:
+        name: "{{ kea_service_dhcp6_name }}.service"
+        state: restarted
+        daemon_reload: true
+      when: t_kea_service_dhcp6_conf.changed or t_kea_conf_kea_dhcp6.changed
+
+  when:
+    - kea_want_dhcp6
+    - kea_service_type == 'systemd'
+
+
+# systemd : kea-ddns
+- name: configure kea-ddns service through systemd
+  block:
+    - name: deploy systemd service kea-ddns
+      template:
+        src: "systemd/kea-dhcp-ddns.service"
+        dest: "{{ systemd_system_lib_dir }}/{{ kea_service_dhcp_ddns }}.service"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0644"
+      register: t_kea_service_ddns_conf
+
+    - name: activate systemd service
+      systemd:
+        name: "{{ kea_service_dhcp_ddns }}.service"
+        enabled: true
+        state: started
+        masked: no
+        daemon_reload: true
+
+    - name: reload systemd service
+      systemd:
+        name: "{{ kea_service_dhcp_ddns }}.service"
+        state: restarted
+        daemon_reload: true
+      when: t_kea_service_ddns_conf.changed or t_kea_conf_kea_ddns.changed
+
+  when:
+    - kea_want_ddns
+    - kea_service_type == 'systemd'
+
+
+
+# daemontools
+

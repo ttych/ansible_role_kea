@@ -1,0 +1,79 @@
+---
+
+- name: deploy kea-dhcp4.conf
+  template:
+    src: "conf/kea-dhcp4.conf"
+    dest: "{{ kea_conf_dir }}/{{ kea_dhcp4_conf_name }}.conf"
+    owner: "{{ kea_admin_user | d('root') }}"
+    group: "{{ kea_group }}"
+    mode: "0640"
+  register: t_kea_conf_kea_dhcp4
+  when: kea_want_dhcp4
+
+
+- name: deploy kea-dhcp6-conf
+  template:
+    src: "conf/kea-dhcp6.conf"
+    dest: "{{ kea_conf_dir }}/{{ kea_dhcp6_conf_name }}.conf"
+    owner: "{{ kea_admin_user | d('root') }}"
+    group: "{{ kea_group }}"
+    mode: "0640"
+  register: t_kea_conf_kea_dhcp6
+  when: kea_want_dhcp6
+
+
+- name: deploy kea-dhcp-ddns.conf
+  template:
+    src: "conf/kea-dhcp-ddns.conf"
+    dest: "{{ kea_conf_dir }}/{{ kea_dhcp_ddns_conf_name }}.conf"
+    owner: "{{ kea_admin_user | d('root') }}"
+    group: "{{ kea_group }}"
+    mode: "0640"
+  register: t_kea_conf_kea_ddns
+  when: kea_want_ddns
+
+
+- name: deploy kea-ctrl_agent.conf
+  template:
+    src: "conf/kea-ctrl-agent.conf"
+    dest: "{{ kea_conf_dir }}/{{ kea_ctrl_agent_conf_name }}.conf"
+    owner: "{{ kea_admin_user | d('root') }}"
+    group: "{{ kea_group }}"
+    mode: "0640"
+  register: t_kea_conf_kea_ctrl_agent
+  when: kea_want_ctrl_agent
+
+
+- name: "check {{ kea_ctrl_agent_conf_password_file }}"
+  stat:
+    path: "{{ kea_ctrl_agent_conf_password_file_path }}"
+  register: t_kea_ctrl_agent_conf_password_file_stat
+
+- name: "create random password for kea-api user"
+  set_fact:
+    kea_ctrl_agent_conf_password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=16) }}"
+  when:
+    - kea_ctrl_agent_conf_password is not defined
+    - not t_kea_ctrl_agent_conf_password_file_stat.stat.exists
+
+- block:
+    - name: "reload password for kea-api user"
+      slurp:
+        src: "{{ kea_ctrl_agent_conf_password_file_path }}"
+      register: t_kea_ctrl_agent_conf_password
+
+    - name: "set password for kea-api user"
+      set_fact:
+        kea_ctrl_agent_conf_password: "{{ t_kea_ctrl_agent_conf_password['content'] | b64decode }}"
+
+  when:
+    - kea_ctrl_agent_conf_password is not defined
+    - t_kea_ctrl_agent_conf_password_file_stat.stat.exists
+
+- name: "deploy {{ kea_ctrl_agent_conf_password_file }}"
+  copy:
+    content: "{{ kea_ctrl_agent_conf_password }}"
+    dest: "{{ kea_ctrl_agent_conf_password_file_path }}"
+    owner: "{{ kea_admin_user | d('root') }}"
+    group: "{{ kea_group }}"
+    mode: "0640"

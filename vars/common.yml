@@ -1,0 +1,8 @@
+---
+
+zfs_dataset_default_properties:
+  setuid: off
+  compression: "lz4"
+  sharenfs: off
+  sharesmb: off
+  atime: off

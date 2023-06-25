@@ -1,0 +1,22 @@
+---
+
+root: root
+root_group: root
+
+etc_dir: /etc
+etc_local_dir: /etc
+
+run_dir: /run
+
+systemd_system_lib_dir: /lib/systemd/system
+
+path_defaults:
+  - /bin
+  - /sbin
+  - /usr/bin
+  - /usr/sbin
+
+path_package_base: /usr
+
+apparmor_service_name: apparmor
+apparmor_d_dir: /etc/apparmor.d

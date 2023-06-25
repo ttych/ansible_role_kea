@@ -1,0 +1,22 @@
+---
+
+root: root
+root_group: wheel
+
+etc_dir: /etc
+etc_local_dir: /usr/local/etc
+
+rc_dir: /etc/rc.d
+rc_local_dir: /usr/local/etc/rc.d
+
+run_dir: /var/run
+
+path_defaults:
+  - /usr/local/bin
+  - /usr/local/sbin
+  - /bin
+  - /sbin
+  - /usr/bin
+  - /usr/sbin
+
+path_package_base: /usr/local
