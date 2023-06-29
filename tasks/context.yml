@@ -11,3 +11,30 @@
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_distribution + '_' + ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution + '_' + ansible_distribution_version }}.yml"
+
+- name: set service_mgr
+  set_fact:
+    service_mgr: "{{ item }}"
+  when:
+    - service_mgr is not defined or not service_mgr
+    - ansible_service_mgr == item or ("has_" + item in vars and vars["has_" + item])
+  loop: "{{ service_mgr_priorities }}"
+
+
+- name: include service variables
+  include_vars:
+    dir: vars
+    files_matching: "service.yml"
+  when: has_service|d(false)
+
+- name: include daemontools variables
+  include_vars:
+    dir: vars
+    files_matching: "daemontools.yml"
+  when: has_daemontools|d(false)
+
+- name: include runit variables
+  include_vars:
+    dir: vars
+    files_matching: "runit.yml"
+  when: has_runit|d(false)

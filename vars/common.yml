@@ -6,3 +6,8 @@ zfs_dataset_default_properties:
   sharenfs: off
   sharesmb: off
   atime: off
+
+service_mgr_priorities:
+  - systemd
+  - daemontools
+  - bsdinit

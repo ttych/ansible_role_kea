@@ -19,3 +19,10 @@
         update_cache: yes
 
   when: ansible_pkg_mgr == 'yum'
+
+- name: pkg install
+  block:
+    - pkgng:
+        name: "{{ packages }}"
+        state: latest
+  when: ansible_pkg_mgr == 'pkgng'

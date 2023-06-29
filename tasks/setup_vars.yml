@@ -22,17 +22,30 @@
         kea_var_dir: "{{ kea_service_dir }}/var"
       when: kea_var_dir is not defined or not kea_var_dir
 
+    - name: set kea_db_dir
+      set_fact:
+        kea_db_dir: "{{ kea_service_dir }}/db"
+      when: kea_db_dir is not defined or not kea_db_dir
+
     - name: set kea_run_dir
       set_fact:
-        kea_run_base_dir: "{{ kea_service_dir }}/run"
+        kea_run_dir: "{{ kea_service_dir }}/run"
       when:
         - kea_run_dir is not defined or not kea_run_dir
         - ansible_system != "Linux"
 
+    - name: set kea_run_lock_dir
+      set_fact:
+        kea_run_lock_dir: "{{ kea_service_dir }}/run/lock"
+      when:
+        - kea_run_lock_dir is not defined or not kea_run_lock_dir
+        - ansible_system != "Linux"
+
     - name: set kea_run_dir on Linux
       set_fact:
-        kea_run_base_dir: "{{ run_dir }}"
+        kea_run_dir: "{{ run_dir }}/{{ kea_name }}"
         kea_run_dir_mode: "0755"
+        kea_run_lock_dir: "{{ run_lock_dir }}/{{ kea_name }}"
         kea_run_lock_dir_mode: "0755"
       when:
         - kea_run_dir is not defined or not kea_run_dir
@@ -60,13 +73,19 @@
 
     - name: set kea_var_dir
       set_fact:
-        kea_var_dir: "/var/lib/{{ kea_name }}"
+        kea_var_dir: "{{ var_app_dir }}/{{ kea_name }}"
       when: kea_var_dir is not defined or not kea_var_dir
 
-    - name: set kea_run_dir on Linux
+    - name: set kea_db_dir
       set_fact:
-        kea_run_base_dir: "{{ run_dir }}"
+        kea_db_dir: "{{ var_app_dir }}/{{ kea_name }}"
+      when: kea_db_dir is not defined or not kea_db_dir
+
+    - name: set kea_run_dir
+      set_fact:
+        kea_run_dir: "{{ run_dir }}/{{ kea_name }}"
         kea_run_dir_mode: "0755"
+        kea_run_lock_dir: "{{ run_lock_dir }}/{{ kea_name }}"
         kea_run_lock_dir_mode: "0755"
       when:
         - kea_run_dir is not defined or not kea_run_dir
@@ -77,25 +96,6 @@
 - block:
     - name: set kea_service_type to system
       set_fact:
-        kea_service_type: "{{ ansible_service_mgr }}"
+        kea_service_type: "{{ service_mgr }}"
 
   when: kea_service_type is not defined or not kea_service_type
-
-
-# - name: include service variables
-#   include_vars:
-#     dir: vars
-#     files_matching: "service.yml"
-#   when: has_service|d(false)
-
-# - name: include daemontools variables
-#   include_vars:
-#     dir: vars
-#     files_matching: "daemontools.yml"
-#   when: has_daemontools|d(false)
-
-# - name: include runit variables
-#   include_vars:
-#     dir: vars
-#     files_matching: "runit.yml"
-#   when: (has_runit|d(false)) and not (has_daemontools|d(false))

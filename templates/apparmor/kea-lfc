@@ -36,8 +36,8 @@ profile kea-lfc {{ kea_dist_bin_lfc }} {
   owner /var/log/kea/kea-dhcp4.log w,
   owner /var/log/kea/kea-dhcp6.log w,
 
-  owner {{ kea_var_dir }}/kea-leases4.csv* rw,
-  owner {{ kea_var_dir }}/kea-leases6.csv* rw,
+  owner {{ kea_dhcp4_conf_lease_db_path }}* rw,
+  owner {{ kea_dhcp6_conf_lease_db_path }}* rw,
 
   owner {{ kea_dhcp4_log_file}} w,
   owner {{ kea_dhcp6_log_file }} w,

@@ -47,7 +47,7 @@ profile kea-dhcp6 /usr/sbin/kea-dhcp6 {
 
   # this includes .completed, .output, .pid, .[0-9]
   owner /var/lib/kea/kea-leases6.csv* rw,
-  owner {{ kea_var_dir }}/kea-leases6.csv* rw,
+  owner {{ kea_dhcp6_conf_lease_db_path }}* rw,
 
   owner /var/log/kea/kea-dhcp6.log rw,
   owner /var/log/kea/kea-dhcp6.log.[0-9]* rw,

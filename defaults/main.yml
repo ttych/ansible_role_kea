@@ -3,9 +3,8 @@
 # documentation: https://kea.readthedocs.io/en/latest/index.html
 
 want_kea: yes
-
 kea_name: kea
-
+kea_verbose: no
 
 kea_isc_download_repo: https://downloads.isc.org/isc/
 kea_repo: "{{ kea_isc_download_repo }}/kea"
@@ -28,13 +27,7 @@ kea_uid: 201
 kea_gid: "{{ kea_uid }}"
 
 kea_use_package: yes
-
-kea_default_packages:
-  Linux:
-    - kea
-kea_default_service_type:
-  Linux:
-    - systemd
+kea_default_packages: kea
 
 kea_distfiles: "{{ kea_service_dir }}/distfiles"
 kea_build_dir: "{{ kea_service_dir }}/build"
@@ -59,43 +52,19 @@ kea_build_directory_tree:
     mode: "0750"
 kea_build_command: "./configure --prefix {{ kea_build_current }} && make -j {{ ansible_processor_vcpus | d(ansible_processor_count) }} && make install"
 
-kea_dist_bin_ctrl_agent_name: kea-ctrl-agent
-kea_dist_bin_ctrl_agent: "{{ kea_base_path }}/sbin/{{ kea_dist_bin_ctrl_agent_name }}"
-kea_dist_bin_dhcp4_name: kea-dhcp4
-kea_dist_bin_dhcp4: "{{ kea_base_path }}/sbin/{{ kea_dist_bin_dhcp4_name }}"
-kea_dist_bin_dhcp6_name: kea-dhcp6
-kea_dist_bin_dhcp6: "{{ kea_base_path }}/sbin/{{ kea_dist_bin_dhcp6_name }}"
-kea_dist_bin_dhcp_ddns_name: kea-dhcp-ddns
-kea_dist_bin_dhcp_ddns: "{{ kea_base_path }}/sbin/{{ kea_dist_bin_dhcp_ddns_name }}"
-kea_dist_bin_lfc_name: kea-lfc
-kea_dist_bin_lfc: "{{ kea_base_path }}/sbin/{{ kea_dist_bin_lfc_name }}"
 
-
-kea_conf_dhcp6_name: kea-dhcp6
-kea_conf_dhcp_ddns_name: kea-dhcp-ddns
-kea_service_ctrl_agent_name: kea-ctrl-agent
-kea_service_dhcp4_name: kea-dhcp4
-kea_service_dhcp6_name: kea-dhcp6
-kea_service_dhcp_ddns: kea-dhcp-ddns
-
-
-
-
-kea_run_subdir: "{{ kea_name }}"
-kea_run_dir: "{{ kea_run_base_dir }}/{{ kea_name }}"
 kea_run_dir_mode: "0750"
-kea_run_lock_subdir: "lock/{{ kea_name }}"
-kea_run_lock_dir: "{{ kea_run_base_dir }}/{{ kea_run_lock_subdir }}"
 kea_run_lock_dir_mode: "0750"
 
 
 ### ctrl-agent
 kea_want_ctrl_agent: yes
-
-kea_ctrl_agent_log_file: "{{ kea_log_dir }}/{{ kea_ctrl_agent_conf_name }}.log"
-
-kea_ctrl_agent_conf_name: kea-ctrl-agent
-kea_ctrl_agent_conf_path: "{{ kea_conf_dir }}/{{ kea_ctrl_agent_conf_name }}.conf"
+kea_ctrl_agent_name: kea-ctrl-agent
+kea_ctrl_agent_log_file: "{{ kea_log_dir }}/{{ kea_ctrl_agent_name }}.log"
+kea_ctrl_agent_service_name: "{{ kea_ctrl_agent_name }}"
+kea_ctrl_agent_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_ctrl_agent_service_name }}"
+kea_ctrl_agent_conf_name: "{{ kea_ctrl_agent_name }}.conf"
+kea_ctrl_agent_conf_path: "{{ kea_conf_dir }}/{{ kea_ctrl_agent_conf_name }}"
 kea_ctrl_agent_conf_http_host: 127.0.0.1
 kea_ctrl_agent_conf_http_port: "8{{ kea_uid }}"
 kea_ctrl_agent_conf_user: kea-api
@@ -121,21 +90,28 @@ kea_ctrl_agent_conf_loggers_1_maxsize: 1048576
 kea_ctrl_agent_conf_loggers_1_maxver: 8
 kea_ctrl_agent_conf_loggers_1_severity: INFO
 kea_ctrl_agent_conf_loggers_1_debuglevel: 0
+kea_ctrl_agent_bin_name: kea-ctrl-agent
+kea_ctrl_agent_bin_path: "{{ kea_base_path }}/sbin/{{ kea_ctrl_agent_bin_name }}"
 
 
 ### dhcp4
 kea_want_dhcp4: yes
-
-kea_dhcp4_log_file: "{{ kea_log_dir }}/{{ kea_dhcp4_conf_name }}.log"
-
-kea_dhcp4_conf_name: kea-dhcp4
-kea_dhcp4_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp4_conf_name }}.conf"
+kea_dhcp4_name: kea-dhcp4
+kea_dhcp4_log_file: "{{ kea_log_dir }}/{{ kea_dhcp4_name }}.log"
+kea_dhcp4_service_name: "{{ kea_dhcp4_name }}"
+kea_dhcp4_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_dhcp4_service_name }}"
+kea_dhcp4_conf_interface: "{{ net_in_interface | d(ansible_default_ipv4.interface) }}"
+kea_dhcp4_conf_interface_settings: "{{ vars['ansible_' + kea_dhcp4_conf_interface].ipv4 | first }}"
+kea_dhcp4_conf_name: "{{ kea_dhcp4_name }}.conf"
+kea_dhcp4_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp4_conf_name }}"
 kea_dhcp4_conf_interfaces:
-  - "{{ ansible_default_ipv4.interface }}"
+  - "{{ kea_dhcp4_conf_interface }}"
 kea_dhcp4_conf_socket_type: raw
 kea_dhcp4_conf_control_socket_type: unix
 kea_dhcp4_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp4_conf_name }}-ctrl-socket"
 kea_dhcp4_conf_lease_db_type: memfile
+kea_dhcp4_conf_lease_db_name: kea-leases4.csv
+kea_dhcp4_conf_lease_db_path: "{{ kea_db_dir }}/{{ kea_dhcp4_conf_lease_db_name }}"
 kea_dhcp4_conf_lease_db_lfc_interval: 3600
 kea_dhcp4_conf_expired_leases_proc_reclaim_timer_wait_time: 10
 kea_dhcp4_conf_expired_leases_proc_flush_reclaimed_timer_wait_time: 25
@@ -162,12 +138,12 @@ kea_dhcp4_conf_option_data_default_ip_ttl: "240"
 kea_dhcp4_conf_client_classes: []
 kea_dhcp4_conf_hooks_libraries: []
 kea_dhcp4_conf_subnet4:
-  - subnet: "{{ansible_default_ipv4.network}}/{{ansible_default_ipv4.prefix}}"
+  - subnet: "{{ (kea_dhcp4_conf_interface_settings.network + '/' + kea_dhcp4_conf_interface_settings.netmask) | ansible.utils.ipaddr('network/prefix') }}"
     pools:
-      - {"pool": "{{ ansible_default_ipv4.network.split('.')[0:3] | join('.') }}.101 - {{ ansible_default_ipv4.broadcast.split('.')[0:3] | join('.') }}.200"}
+      - {"pool": "{{ kea_dhcp4_conf_interface_settings.network.split('.')[0:3] | join('.') }}.101 - {{ kea_dhcp4_conf_interface_settings.broadcast.split('.')[0:3] | join('.') }}.200"}
     option-data:
       - name: routers
-        data: "{{ ansible_default_ipv4.gateway }}"
+        data: "{{ kea_dhcp4_conf_interface_settings.address }}"
     reservations: []
 kea_dhcp4_conf_loggers: [ "{{ kea_dhcp4_conf_loggers_default }}" ]
 kea_dhcp4_conf_loggers_default:
@@ -180,28 +156,67 @@ kea_dhcp4_conf_loggers_default:
       maxver: 8
   severity: INFO
   debuglevel: 0
+kea_dhcp4_bin_name: kea-dhcp4
+kea_dhcp4_bin_path: "{{ kea_base_path }}/sbin/{{ kea_dhcp4_bin_name }}"
 
 
 ### dhcp6
 kea_want_dhcp6: no
-
-kea_dhcp6_log_file: "{{ kea_log_dir }}/{{ kea_dhcp6_conf_name }}.log"
-
-kea_dhcp6_conf_name: kea-dhcp6
-kea_dhcp6_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp6_conf_name }}.conf"
+kea_dhcp6_name: kea-dhcp6
+kea_dhcp6_log_file: "{{ kea_log_dir }}/{{ kea_dhcp6_name }}.log"
+kea_dhcp6_service_name: "{{ kea_dhcp6_name }}"
+kea_dhcp6_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_dhcp6_service_name }}"
+kea_dhcp6_conf_name: "{{ kea_dhcp6_name }}.conf"
+kea_dhcp6_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp6_conf_name }}"
 kea_dhcp6_conf_control_socket_type: unix
 kea_dhcp6_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp6_conf_name }}-ctrl-socket"
+kea_dhcp6_conf_lease_db_type: memfile
+kea_dhcp6_conf_lease_db_name: kea-leases6.csv
+kea_dhcp6_conf_lease_db_path: "{{ kea_db_dir }}/{{ kea_dhcp6_conf_lease_db_name }}"
+kea_dhcp6_bin_name: kea-dhcp6
+kea_dhcp6_bin_path: "{{ kea_base_path }}/sbin/{{ kea_dhcp6_bin_name }}"
 
 
 ### dhcp-ddns
-kea_want_ddns: no
+kea_want_dhcp_ddns: no
+kea_dhcp_ddns_name: kea-dhcp-ddns
+kea_dhcp_ddns_log_file: "{{ kea_log_dir }}/{{ kea_dhcp_ddns_name }}.log"
+kea_dhcp_ddns_service_name: "{{ kea_dhcp_ddns_name }}"
+kea_dhcp_ddns_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_dhcp_ddns_service_name }}"
+kea_dhcp_ddns_conf_name: "{{ kea_dhcp_ddns_name }}.conf"
+kea_dhcp_ddns_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp_ddns_conf_name }}"
+kea_dhcp_ddns_conf_control_socket_type: unix
+kea_dhcp_ddns_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp_ddns_name }}-ctrl-socket"
+kea_dhcp_ddns_bin_name: kea-dhcp-ddns
+kea_dhcp_ddns_bin_path: "{{ kea_base_path }}/sbin/{{ kea_dhcp_ddns_bin_name }}"
 
-kea_dhcp_ddns_log_file: "{{ kea_log_dir }}/{{ kea_dhcp_dns_conf_name }}.log"
 
-kea_dhcp_dns_conf_name: kea-ddns
-kea_dhcp_dns_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp_dns_conf_name }}.conf"
-kea_dhcp_dns_conf_control_socket_type: unix
-kea_dhcp_dns_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp_dns_conf_name }}-ctrl-socket"
+### keactrl
+kea_ctrl_name: keactrl
+kea_ctrl_service_name: "{{ kea_ctrl_name }}"
+kea_ctrl_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_ctrl_service_name }}"
+kea_ctrl_bin_name: "{{ kea_ctrl_name }}"
+kea_ctrl_bin_path: "{{ kea_base_path }}/sbin/{{ kea_ctrl_bin_name }}"
+kea_ctrl_conf_name: "{{ kea_ctrl_name }}.conf"
+kea_ctrl_conf_path: "{{ kea_conf_dir }}/{{ kea_ctrl_conf_name }}"
+
+
+### kea-lfc
+kea_lfc_bin_name: kea-lfc
+kea_lfc_bin_path: "{{ kea_base_path }}/sbin/{{ kea_lfc_bin_name }}"
+
+
+### kea-netconf
+kea_want_netconf: no
+kea_netconf_name: kea-netconf
+kea_netconf_conf_name: "{{ kea_netconf_name }}.conf"
+kea_netconf_conf_path: "{{ kea_conf_dir }}/{{ kea_netconf_conf_name }}"
+kea_netconf_bin_name: "{{ kea_netconf_name }}"
+kea_netconf_bin_path: "{{ kea_base_path }}/sbin/{{ kea_netconf_bin_name }}"
+
+
+### daemontools
+kea_daemontools_svscan_dir: "{{ kea_service_dir }}/{{ daemontools_svscan_name }}"
 
 
 

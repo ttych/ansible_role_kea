@@ -10,6 +10,9 @@ rc_dir: /etc/rc.d
 rc_local_dir: /usr/local/etc/rc.d
 
 run_dir: /var/run
+run_lock_dir: /var/run/lock
+
+var_app_dir: /var
 
 path_defaults:
   - /usr/local/bin

@@ -1,0 +1,27 @@
+---
+
+daemontools_svscan_name: svscan
+
+daemontools_service_subdirs:
+  - path: ""
+    owner: "{{ root }}"
+    group: "{{ root_group }}"
+    mode: "0755"
+  - path: "/log"
+    owner: "{{ root }}"
+    group: "{{ root_group }}"
+    mode: "0755"
+  - path: "/log/main"
+    owner: "{{ daemontools_log_user | d('nobody')  }}"
+    group: "{{ root_group }}"
+    mode: "0755"
+
+daemontools_service_scripts:
+  - path: run
+    owner: "{{ root }}"
+    group: "{{ root_group }}"
+    mode: "0755"
+  - path: log/run
+    owner: "{{ root }}"
+    group: "{{ root_group }}"
+    mode: "0755"

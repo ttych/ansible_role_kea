@@ -3,7 +3,7 @@
 - block:
     - include_tasks: context.yml
 
-    - include_tasks: context_service.yml
+    - include_tasks: setup_vars.yml
 
     - include_tasks: setup_workspace.yml
 

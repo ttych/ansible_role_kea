@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec setuidgid {{ daemontools_log_user | d('nobody') }} multilog t ./main

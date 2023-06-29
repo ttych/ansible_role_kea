@@ -7,6 +7,9 @@ etc_dir: /etc
 etc_local_dir: /etc
 
 run_dir: /run
+run_lock_dir: /run/lock
+
+var_app_dir: /var/lib
 
 systemd_system_lib_dir: /lib/systemd/system
 
