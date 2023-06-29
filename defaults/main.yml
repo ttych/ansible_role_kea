@@ -50,7 +50,7 @@ kea_build_directory_tree:
     owner: "{{ kea_admin_user|d('root') }}"
     group: "{{ kea_group }}"
     mode: "0750"
-kea_build_command: "./configure --prefix {{ kea_build_current }} && make -j {{ ansible_processor_vcpus | d(ansible_processor_count) }} && make install"
+kea_build_command: "./configure --prefix {{ kea_build_current }} --with-gssapi --enable-shell && make -j {{ ansible_processor_vcpus | d(ansible_processor_count) }} && make install"
 
 
 kea_run_dir_mode: "0750"
