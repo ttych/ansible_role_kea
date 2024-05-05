@@ -2,7 +2,7 @@ abi <abi/3.0>,
 
 include <tunables/global>
 
-profile kea-dhcp-ddns /usr/sbin/kea-dhcp-ddns {
+profile kea-dhcp-ddns {{ kea_dhcp_ddns_bin_path }} {
   include <abstractions/base>
   include <abstractions/nameservice>
   include <abstractions/openssl>
@@ -16,7 +16,7 @@ profile kea-dhcp-ddns /usr/sbin/kea-dhcp-ddns {
   {{ kea_conf_dir }}/** r,
 
   /usr/sbin/kea-dhcp-ddns mr,
-  {{ kea_dist_bin_dhcp_ddns }} mr,
+  {{ kea_dhcp_ddns_bin_path }} mr,
 
   owner /run/kea/kea-dhcp-ddns.kea-dhcp-ddns.pid w,
   owner /run/lock/kea/logger_lockfile rwk,

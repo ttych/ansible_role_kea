@@ -2,7 +2,7 @@ abi <abi/3.0>,
 
 include <tunables/global>
 
-profile kea-dhcp4 {{ kea_dist_bin_dhcp4 }} {
+profile kea-dhcp4 {{ kea_dhcp4_bin_path }} {
   include <abstractions/base>
   include <abstractions/nameservice>
 
@@ -27,10 +27,10 @@ profile kea-dhcp4 {{ kea_dist_bin_dhcp4 }} {
   {{ kea_conf_dir }}/** r,
 
   /usr/sbin/kea-dhcp4 mr,
-  {{ kea_dist_bin_dhcp4 }} mr,
+  {{ kea_dhcp4_bin_path }} mr,
 
   /usr/sbin/kea-lfc Px,
-  {{ kea_dist_bin_lfc }} Px,
+  {{ kea_lfc_bin_path }} Px,
 
   owner /run/kea/kea-dhcp4.kea-dhcp4.pid w,
   owner /run/lock/kea/logger_lockfile rwk,
@@ -43,8 +43,8 @@ profile kea-dhcp4 {{ kea_dist_bin_dhcp4 }} {
   # locations
   owner /{tmp,run/kea}/kea4-ctrl-socket w,
   owner /{tmp,run/kea}/kea4-ctrl-socket.lock rwk,
-  owner {{ kea_run_dir }}/kea4-ctrl-socket w,
-  owner {{ kea_run_dir }}/kea4-ctrl-socket.lock rwk,
+  owner {{ kea_dhcp4_conf_control_socket_path }} w,
+  owner {{ kea_dhcp4_conf_control_socket_path }}.lock rwk,
 
   owner /var/lib/kea/kea-dhcp4-serverid rw,
   owner {{ kea_var_dir }}/kea-dhcp4-serverid rw,

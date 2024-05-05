@@ -15,8 +15,8 @@
 
     - include_tasks: setup_service.yml
 
-    - name: "set has_kea to true"
-      set_fact:
-        "has_kea": true
-
   when: want_kea
+
+- name: set has_kea
+  set_fact:
+    has_kea: "{{ want_kea }}"

@@ -1,0 +1,39 @@
+---
+
+- name: setup apparmor
+  block:
+    # - name: check apparmor service status
+    #   systemd:
+    #     name: "{{ apparmor_service_name }}"
+    #   register: t_kea_apparmor_service_status
+
+    - block:
+        - name: deploy apparmor
+          template:
+            src: "apparmor/{{ item.name }}"
+            dest: "{{ apparmor_d_dir }}/{{ (item.path | replace('/', '.'))[1:] }}"
+            owner: "{{ root }}"
+            group: "{{ root_group }}"
+            mode: "0644"
+          loop:
+            - name: "{{ kea_ctrl_agent_bin_name }}"
+              path: "{{ kea_ctrl_agent_bin_path }}"
+            - name: "{{ kea_dhcp4_bin_name }}"
+              path: "{{ kea_dhcp4_bin_path }}"
+            - name: "{{ kea_dhcp6_bin_name }}"
+              path: "{{ kea_dhcp6_bin_path }}"
+            - name: "{{ kea_dhcp_ddns_bin_name }}"
+              path: "{{ kea_dhcp_ddns_bin_path }}"
+            - name: "{{ kea_lfc_bin_name }}"
+              path: "{{ kea_lfc_bin_path }}"
+          register: t_kea_apparmor_kea_conf
+
+        - name: reload apparmor
+          systemd:
+            name: "{{ apparmor_service_name }}"
+            state: restarted
+          when: t_kea_apparmor_kea_conf.changed
+
+      # when: t_kea_apparmor_service_status.status.ActiveState == "active"
+
+  when: ansible_apparmor|d(false) and ansible_apparmor.status == "enabled"

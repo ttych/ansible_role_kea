@@ -2,7 +2,7 @@
 
 - block:
     - name: "get zfs associated dataset for {{ dataset.name | dirname }}"
-      shell: zfs list -H "{{ dataset.name | dirname }}" | awk '{print $1}'
+      shell: zfs list -H "{{ dataset.name | dirname }}" | awk '$5 == "{{ dataset.name | dirname }}" { print $1 }'
       register: try_zfs_parent_dataset
       changed_when: no
 

@@ -11,13 +11,13 @@
     - name: install packages
       include_tasks: package_installer.yml
       vars:
-        packages: "{{ kea_packages | d(kea_default_packages[ansible_distribution]) | d(kea_default_packages[ansible_system]) | d(kea_name) }}"
+        packages: "{{ kea_packages | d(kea_default_packages) }}"
 
-    - name: set kea_base_path
+    - name: set kea_bin_base_path
       set_fact:
-        kea_base_path: "{{ path_package_base }}"
+        kea_bin_base_path: "{{ path_package_base }}"
 
-  when: kea_use_package
+  when: not kea_build
 
 
 ### use_package: no
@@ -90,4 +90,8 @@
         group: "{{ kea_group }}"
         state: link
 
-  when: not kea_use_package
+    - name: set kea_bin_base_path
+      set_fact:
+        kea_bin_base_path: "{{ kea_build_in_use }}"
+
+  when: kea_build

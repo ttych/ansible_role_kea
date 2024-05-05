@@ -2,7 +2,7 @@ abi <abi/3.0>,
 
 include <tunables/global>
 
-profile kea-lfc {{ kea_dist_bin_lfc }} {
+profile kea-lfc {{ kea_lfc_bin_path }} {
   include <abstractions/base>
   include <abstractions/nameservice>
 
@@ -10,7 +10,7 @@ profile kea-lfc {{ kea_dist_bin_lfc }} {
 
   /usr/sbin/kea-lfc mr,
 
-  {{ kea_dist_bin_lfc }} mr,
+  {{ kea_lfc_bin_path }} mr,
 
   owner /run/kea/logger_lockfile rwk,
   owner /run/lock/kea/logger_lockfile rw,

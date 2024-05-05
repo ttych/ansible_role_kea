@@ -7,7 +7,8 @@ etc_dir: /etc
 etc_local_dir: /etc
 
 run_dir: /run
-run_lock_dir: /run/lock
+run_lock_dirname: lock
+run_lock_dir: "/run/{{ run_lock_dirname }}"
 
 var_app_dir: /var/lib
 

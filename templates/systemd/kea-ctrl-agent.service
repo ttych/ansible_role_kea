@@ -9,16 +9,16 @@ User={{ kea_user }}
 Environment="KEA_LOCKFILE_DIR={{ kea_run_lock_dir }}"
 Environment="PATH={{ path_defaults | join(':') }}"
 ConfigurationDirectory={{ kea_name }}
-RuntimeDirectory={{ kea_run_subdir }} {{ kea_run_lock_subdir }}
+RuntimeDirectory={{ kea_name }} {{ run_lock_dirname }}/{{ kea_name }}
 RuntimeDirectoryPreserve=yes
 LogsDirectory={{ kea_name }}
 LogsDirectoryMode=0750
 StateDirectory={{ kea_name }}
-ExecStart={{ kea_dist_bin_ctrl_agent }} -c "{{ kea_ctrl_agent_conf_path }}"
+ExecStart={{ kea_ctrl_agent_bin_path }} -c "{{ kea_ctrl_agent_conf_path }}"
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
 
 [Install]
-WantedBy={{ kea_service_dhcp4_name }}.service
-WantedBy={{ kea_service_dhcp6_name }}.service
+WantedBy={{ kea_dhcp4_service_name }}.service
+WantedBy={{ kea_dhcp6_service_name }}.service

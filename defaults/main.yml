@@ -2,13 +2,34 @@
 
 # documentation: https://kea.readthedocs.io/en/latest/index.html
 
-want_kea: yes
-kea_name: kea
-kea_verbose: no
+want_kea: no
 
+kea_name: kea
+
+kea_user: "_{{ kea_name }}"
+kea_group: "_{{ kea_name }}"
+kea_groups:
+kea_home: "/home/{{ kea_user }}"
+kea_home_mode: '0700'
+kea_shell: /sbin/nologin
+kea_uid: 201
+kea_gid: "{{ kea_uid }}"
+
+# workspace: default or service
+kea_workspace_type: default
+
+# service
+kea_service_type: "{{ ansible_service_mgr }}"
+kea_verbose: no
+kea_service_to_disable:
+  - kea-dhcp4-server.service
+  - kea-dhcp6-server.service
+
+# build
+kea_build: no
+kea_version: 2.5.7
 kea_isc_download_repo: https://downloads.isc.org/isc/
 kea_repo: "{{ kea_isc_download_repo }}/kea"
-kea_version: 2.3.8
 kea_name_version: "{{ kea_name}}-{{ kea_version }}"
 kea_archive: "{{ kea_name_version }}.tar.gz"
 kea_archive_url: "{{ kea_repo }}/{{ kea_version }}/{{ kea_archive }}"
@@ -17,24 +38,11 @@ kea_doc_arm_url: "{{ kea_repo }}/{{ kea_version }}/doc/{{ kea_doc_arm }}"
 kea_doc_messages: kea-messages.pdf
 kea_doc_messages_url: "{{ kea_repo }}/{{ kea_version }}/doc/{{ kea_doc_messages }}"
 
-kea_user: "_{{ kea_name }}"
-kea_group: "_{{ kea_name }}"
-kea_groups:
-kea_home: "{{ kea_service_dir|d('/home') }}/{{ kea_name }}"
-kea_home_mode: '0700'
-kea_shell: /sbin/nologin
-kea_uid: 201
-kea_gid: "{{ kea_uid }}"
-
-kea_use_package: yes
-kea_default_packages: kea
-
 kea_distfiles: "{{ kea_service_dir }}/distfiles"
 kea_build_dir: "{{ kea_service_dir }}/build"
 kea_build_current: "{{ kea_build_dir }}/{{ kea_name_version }}"
 kea_build_in_use: "{{ kea_build_dir }}/{{ kea_name }}"
 
-kea_base_path: "{{ kea_build_in_use }}"
 
 kea_build_defaut_packages:
   Ubuntu:
@@ -51,10 +59,6 @@ kea_build_directory_tree:
     group: "{{ kea_group }}"
     mode: "0750"
 kea_build_command: "./configure --prefix {{ kea_build_current }} --with-gssapi --enable-shell && make -j {{ ansible_processor_vcpus | d(ansible_processor_count) }} && make install"
-
-
-kea_run_dir_mode: "0750"
-kea_run_lock_dir_mode: "0750"
 
 
 ### ctrl-agent
@@ -91,7 +95,7 @@ kea_ctrl_agent_conf_loggers_1_maxver: 8
 kea_ctrl_agent_conf_loggers_1_severity: INFO
 kea_ctrl_agent_conf_loggers_1_debuglevel: 0
 kea_ctrl_agent_bin_name: kea-ctrl-agent
-kea_ctrl_agent_bin_path: "{{ kea_base_path }}/sbin/{{ kea_ctrl_agent_bin_name }}"
+kea_ctrl_agent_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_ctrl_agent_bin_name }}"
 
 
 ### dhcp4
@@ -101,14 +105,14 @@ kea_dhcp4_log_file: "{{ kea_log_dir }}/{{ kea_dhcp4_name }}.log"
 kea_dhcp4_service_name: "{{ kea_dhcp4_name }}"
 kea_dhcp4_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_dhcp4_service_name }}"
 kea_dhcp4_conf_interface: "{{ net_in_interface | d(ansible_default_ipv4.interface) }}"
-kea_dhcp4_conf_interface_settings: "{{ vars['ansible_' + kea_dhcp4_conf_interface].ipv4 | first }}"
+kea_dhcp4_conf_interface_settings: "{{ vars['ansible_' + kea_dhcp4_conf_interface].ipv4 }}"
 kea_dhcp4_conf_name: "{{ kea_dhcp4_name }}.conf"
 kea_dhcp4_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp4_conf_name }}"
 kea_dhcp4_conf_interfaces:
   - "{{ kea_dhcp4_conf_interface }}"
 kea_dhcp4_conf_socket_type: raw
 kea_dhcp4_conf_control_socket_type: unix
-kea_dhcp4_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp4_conf_name }}-ctrl-socket"
+kea_dhcp4_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp4_name }}-ctrl-socket"
 kea_dhcp4_conf_lease_db_type: memfile
 kea_dhcp4_conf_lease_db_name: kea-leases4.csv
 kea_dhcp4_conf_lease_db_path: "{{ kea_db_dir }}/{{ kea_dhcp4_conf_lease_db_name }}"
@@ -140,7 +144,7 @@ kea_dhcp4_conf_hooks_libraries: []
 kea_dhcp4_conf_subnet4:
   - subnet: "{{ (kea_dhcp4_conf_interface_settings.network + '/' + kea_dhcp4_conf_interface_settings.netmask) | ansible.utils.ipaddr('network/prefix') }}"
     pools:
-      - {"pool": "{{ kea_dhcp4_conf_interface_settings.network.split('.')[0:3] | join('.') }}.101 - {{ kea_dhcp4_conf_interface_settings.broadcast.split('.')[0:3] | join('.') }}.200"}
+      - {"pool": "{{ kea_dhcp4_conf_interface_settings.network.split('.')[0:3] | join('.') }}.50 - {{ kea_dhcp4_conf_interface_settings.network.split('.')[0:3] | join('.') }}.250"}
     option-data:
       - name: routers
         data: "{{ kea_dhcp4_conf_interface_settings.address }}"
@@ -157,7 +161,7 @@ kea_dhcp4_conf_loggers_default:
   severity: INFO
   debuglevel: 0
 kea_dhcp4_bin_name: kea-dhcp4
-kea_dhcp4_bin_path: "{{ kea_base_path }}/sbin/{{ kea_dhcp4_bin_name }}"
+kea_dhcp4_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_dhcp4_bin_name }}"
 
 
 ### dhcp6
@@ -169,12 +173,12 @@ kea_dhcp6_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_dhcp6
 kea_dhcp6_conf_name: "{{ kea_dhcp6_name }}.conf"
 kea_dhcp6_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp6_conf_name }}"
 kea_dhcp6_conf_control_socket_type: unix
-kea_dhcp6_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp6_conf_name }}-ctrl-socket"
+kea_dhcp6_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp6_name }}-ctrl-socket"
 kea_dhcp6_conf_lease_db_type: memfile
 kea_dhcp6_conf_lease_db_name: kea-leases6.csv
 kea_dhcp6_conf_lease_db_path: "{{ kea_db_dir }}/{{ kea_dhcp6_conf_lease_db_name }}"
 kea_dhcp6_bin_name: kea-dhcp6
-kea_dhcp6_bin_path: "{{ kea_base_path }}/sbin/{{ kea_dhcp6_bin_name }}"
+kea_dhcp6_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_dhcp6_bin_name }}"
 
 
 ### dhcp-ddns
@@ -188,7 +192,7 @@ kea_dhcp_ddns_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp_ddns_conf_name }}"
 kea_dhcp_ddns_conf_control_socket_type: unix
 kea_dhcp_ddns_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp_ddns_name }}-ctrl-socket"
 kea_dhcp_ddns_bin_name: kea-dhcp-ddns
-kea_dhcp_ddns_bin_path: "{{ kea_base_path }}/sbin/{{ kea_dhcp_ddns_bin_name }}"
+kea_dhcp_ddns_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_dhcp_ddns_bin_name }}"
 
 
 ### keactrl
@@ -196,14 +200,14 @@ kea_ctrl_name: keactrl
 kea_ctrl_service_name: "{{ kea_ctrl_name }}"
 kea_ctrl_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_ctrl_service_name }}"
 kea_ctrl_bin_name: "{{ kea_ctrl_name }}"
-kea_ctrl_bin_path: "{{ kea_base_path }}/sbin/{{ kea_ctrl_bin_name }}"
+kea_ctrl_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_ctrl_bin_name }}"
 kea_ctrl_conf_name: "{{ kea_ctrl_name }}.conf"
 kea_ctrl_conf_path: "{{ kea_conf_dir }}/{{ kea_ctrl_conf_name }}"
 
 
 ### kea-lfc
 kea_lfc_bin_name: kea-lfc
-kea_lfc_bin_path: "{{ kea_base_path }}/sbin/{{ kea_lfc_bin_name }}"
+kea_lfc_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_lfc_bin_name }}"
 
 
 ### kea-netconf
@@ -212,7 +216,7 @@ kea_netconf_name: kea-netconf
 kea_netconf_conf_name: "{{ kea_netconf_name }}.conf"
 kea_netconf_conf_path: "{{ kea_conf_dir }}/{{ kea_netconf_conf_name }}"
 kea_netconf_bin_name: "{{ kea_netconf_name }}"
-kea_netconf_bin_path: "{{ kea_base_path }}/sbin/{{ kea_netconf_bin_name }}"
+kea_netconf_bin_path: "{{ kea_bin_base_path }}/sbin/{{ kea_netconf_bin_name }}"
 
 
 ### daemontools

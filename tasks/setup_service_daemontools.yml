@@ -1,0 +1,208 @@
+---
+
+# daemontools
+
+- block:
+
+    - name: svscan dir
+      file:
+        path: "{{ kea_daemontools_svscan_dir }}"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0755"
+        state: directory
+
+# daemontools : keactrl
+    # - name: configure keactrl
+    #   block:
+    #     - name: workspace
+    #       file:
+    #         path: "{{ kea_ctrl_daemontools_svscan_dir }}/{{ item.path }}"
+    #         owner: "{{ item.owner }}"
+    #         group: "{{ item.group }}"
+    #         mode: "{{ item.mode }}"
+    #         state: directory
+    #       loop: "{{ daemontools_service_subdirs }}"
+
+    #     - name: scripts
+    #       template:
+    #         src: "svscan/{{ kea_ctrl_service_name }}/{{ item.path }}"
+    #         dest: "{{ kea_ctrl_daemontools_svscan_dir }}/{{ item.path }}"
+    #         owner: "{{ item.owner }}"
+    #         group: "{{ item.group }}"
+    #         mode: "{{ item.mode }}"
+    #       loop: "{{ daemontools_service_scripts }}"
+
+    #     - name: supervise
+    #       file:
+    #         src: "{{ kea_ctrl_daemontools_svscan_dir }}"
+    #         dest: "{{ daemontools_svscan_dir }}/{{ kea_ctrl_service_name }}"
+    #         state: link
+
+# daemontools : kea-ctrl-agent
+    - block:
+        - name: kea-ctrl-agent - workspace
+          file:
+            path: "{{ kea_ctrl_agent_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+            state: directory
+          loop: "{{ daemontools_service_subdirs }}"
+
+        - name: kea-ctrl-agent - scripts
+          template:
+            src: "svscan/{{ kea_ctrl_agent_service_name }}/{{ item.path }}"
+            dest: "{{ kea_ctrl_agent_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+          loop: "{{ daemontools_service_scripts }}"
+
+        - name: kea-ctrl-agent - supervise
+          file:
+            src: "{{ kea_ctrl_agent_daemontools_svscan_dir }}"
+            dest: "{{ daemontools_svscan_dir }}/{{ kea_ctrl_agent_service_name }}"
+            state: link
+
+        - name: kea-ctrl-agent - enable
+          command:
+            cmd: "svc -u {{ kea_ctrl_agent_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          changed_when: no
+
+        - name: kea-ctrl-agent - reload
+          command:
+            cmd: "svc -t {{ kea_ctrl_agent_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          when: t_kea_service_ctr_agent_conf.changed or t_kea_conf_kea_ctrl_agent.changed
+
+      when:
+        - kea_want_ctrl_agent
+
+# daemontools : kea-dhcp4
+    - block:
+        - name: kea-dhcp4 - workspace
+          file:
+            path: "{{ kea_dhcp4_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+            state: directory
+          loop: "{{ daemontools_service_subdirs }}"
+
+        - name: kea-dhcp4 - scripts
+          template:
+            src: "svscan/{{ kea_dhcp4_service_name }}/{{ item.path }}"
+            dest: "{{ kea_dhcp4_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+          loop: "{{ daemontools_service_scripts }}"
+
+        - name: kea-dhcp4 - supervise
+          file:
+            src: "{{ kea_dhcp4_daemontools_svscan_dir }}"
+            dest: "{{ daemontools_svscan_dir }}/{{ kea_dhcp4_service_name }}"
+            state: link
+
+        - name: kea-dhcp4 - enable
+          command:
+            cmd: "svc -u {{ kea_dhcp4_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          changed_when: no
+
+        - name: kea-dhcp4 - reload
+          command:
+            cmd: "svc -t {{ kea_dhcp4_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          when: t_kea_service_dhcp4_conf.changed or t_kea_conf_kea_dhcp4.changed
+
+      when:
+        - kea_want_dhcp4
+
+# daemontools : kea-dhcp6
+    - block:
+        - name: kea-dhcp6 - workspace
+          file:
+            path: "{{ kea_dhcp6_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+            state: directory
+          loop: "{{ daemontools_service_subdirs }}"
+
+        - name: kea-dhcp6 - scripts
+          template:
+            src: "svscan/{{ kea_dhcp6_service_name }}/{{ item.path }}"
+            dest: "{{ kea_dhcp6_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+          loop: "{{ daemontools_service_scripts }}"
+
+        - name: kea-dhcp6 - supervise
+          file:
+            src: "{{ kea_dhcp6_daemontools_svscan_dir }}"
+            dest: "{{ daemontools_svscan_dir }}/{{ kea_dhcp6_service_name }}"
+            state: link
+
+        - name: kea-dhcp6 - enable
+          command:
+            cmd: "svc -u {{ kea_dhcp6_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          changed_when: no
+
+        - name: kea-dhcp6 - reload
+          command:
+            cmd: "svc -t {{ kea_dhcp6_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          when: t_kea_service_dhcp6_conf.changed or t_kea_conf_kea_dhcp6.changed
+
+      when:
+        - kea_want_dhcp6
+
+# daemontools : kea-ddns
+    - block:
+        - name: kea-dhcp-ddns - workspace
+          file:
+            path: "{{ kea_dhcp_ddns_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+            state: directory
+          loop: "{{ daemontools_service_subdirs }}"
+
+        - name: kea-dhcp-ddns - scripts
+          template:
+            src: "svscan/{{ kea_dhcp_ddns_service_name }}/{{ item.path }}"
+            dest: "{{ kea_dhcp_ddns_daemontools_svscan_dir }}/{{ item.path }}"
+            owner: "{{ item.owner }}"
+            group: "{{ item.group }}"
+            mode: "{{ item.mode }}"
+          loop: "{{ daemontools_service_scripts }}"
+
+        - name: kea-dhcp-ddns - supervise
+          file:
+            src: "{{ kea_dhcp_ddns_daemontools_svscan_dir }}"
+            dest: "{{ daemontools_svscan_dir }}/{{ kea_dhcp_ddns_service_name }}"
+            state: link
+
+        - name: kea-dhcp-ddns - enable
+          command:
+            cmd: "svc -u {{ kea_dhcp_ddns_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          changed_when: no
+
+        - name: kea-dhcp-ddns - reload
+          command:
+            cmd: "svc -t {{ kea_dhcp_ddns_service_name }}"
+            chdir: "{{ daemontools_svscan_dir }}"
+          when: t_kea_service_ddns_conf.changed or t_kea_conf_kea_ddns.changed
+
+      when:
+        - kea_want_dhcp_ddns
+
+  when:
+    - has_daemontools|d(false)
+    - kea_service_type == 'daemontools'

@@ -1,6 +1,48 @@
 ---
 
-# with service_dir
+# standard path
+
+- block:
+    - name: set kea_conf_dir
+      set_fact:
+        kea_conf_dir: "/etc/kea"
+      when: kea_conf_dir is not defined or not kea_conf_dir
+
+    - name: set kea_log_dir
+      set_fact:
+        kea_log_dir: "/var/log/{{ kea_name }}"
+      when: kea_log_dir is not defined or not kea_log_dir
+
+    - name: set kea_var_dir
+      set_fact:
+        kea_var_dir: "{{ var_app_dir }}/{{ kea_name }}"
+      when: kea_var_dir is not defined or not kea_var_dir
+
+    - name: set kea_db_dir
+      set_fact:
+        kea_db_dir: "{{ var_app_dir }}/{{ kea_name }}"
+      when: kea_db_dir is not defined or not kea_db_dir
+
+    - name: set kea_run_dir
+      set_fact:
+        kea_run_dir: "{{ run_dir }}/{{ kea_name }}"
+        kea_run_dir_mode: "0755"
+        kea_run_lock_dir: "{{ run_lock_dir }}/{{ kea_name }}"
+        kea_run_lock_dir_mode: "0755"
+      when: kea_run_dir is not defined or not kea_run_dir
+
+    - name: set kea_home
+      set_fact:
+        kea_home: "{{ kea_var_dir }}"
+
+    - name: set kea_service_dir
+      set_fact:
+        kea_service_dir: "{{ kea_home }}"
+
+  when: kea_workspace_type == 'default'
+
+
+# service path
 
 - block:
     - name: set kea_service_dir
@@ -51,51 +93,4 @@
         - kea_run_dir is not defined or not kea_run_dir
         - ansible_system == "Linux"
 
-  when: service_dir is defined and service_dir
-
-
-# without service_dir
-
-- block:
-    - name: set kea_service_dir
-      set_fact:
-        kea_service_dir: "{{ kea_home }}"
-
-    - name: set kea_conf_dir
-      set_fact:
-        kea_conf_dir: "/etc/kea"
-      when: kea_conf_dir is not defined or not kea_conf_dir
-
-    - name: set kea_log_dir
-      set_fact:
-        kea_log_dir: "/var/log/{{ kea_name }}"
-      when: kea_log_dir is not defined or not kea_log_dir
-
-    - name: set kea_var_dir
-      set_fact:
-        kea_var_dir: "{{ var_app_dir }}/{{ kea_name }}"
-      when: kea_var_dir is not defined or not kea_var_dir
-
-    - name: set kea_db_dir
-      set_fact:
-        kea_db_dir: "{{ var_app_dir }}/{{ kea_name }}"
-      when: kea_db_dir is not defined or not kea_db_dir
-
-    - name: set kea_run_dir
-      set_fact:
-        kea_run_dir: "{{ run_dir }}/{{ kea_name }}"
-        kea_run_dir_mode: "0755"
-        kea_run_lock_dir: "{{ run_lock_dir }}/{{ kea_name }}"
-        kea_run_lock_dir_mode: "0755"
-      when:
-        - kea_run_dir is not defined or not kea_run_dir
-
-  when: service_dir is not defined or not service_dir
-
-
-- block:
-    - name: set kea_service_type to system
-      set_fact:
-        kea_service_type: "{{ service_mgr }}"
-
-  when: kea_service_type is not defined or not kea_service_type
+  when: kea_workspace_type == 'service'

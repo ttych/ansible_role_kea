@@ -5,21 +5,11 @@
     dir: vars
     files_matching: "{{ item }}"
   loop:
-    - "common.yml"
     - "{{ ansible_system }}.yml"
     - "{{ ansible_os_family }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_distribution + '_' + ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution + '_' + ansible_distribution_version }}.yml"
-
-- name: set service_mgr
-  set_fact:
-    service_mgr: "{{ item }}"
-  when:
-    - service_mgr is not defined or not service_mgr
-    - ansible_service_mgr == item or ("has_" + item in vars and vars["has_" + item])
-  loop: "{{ service_mgr_priorities }}"
-
 
 - name: include service variables
   include_vars:

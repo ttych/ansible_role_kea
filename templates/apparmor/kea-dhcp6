@@ -2,7 +2,7 @@ abi <abi/3.0>,
 
 include <tunables/global>
 
-profile kea-dhcp6 /usr/sbin/kea-dhcp6 {
+profile kea-dhcp6 {{ kea_dhcp6_bin_path }} {
   include <abstractions/base>
   include <abstractions/nameservice>
 
@@ -24,10 +24,10 @@ profile kea-dhcp6 /usr/sbin/kea-dhcp6 {
   {{ kea_conf_dir }}/** r,
 
   /usr/sbin/kea-dhcp6 mr,
-  {{ kea_dist_bin_dhcp6 }} mr,
+  {{ kea_dhcp6_bin_path }} mr,
 
   /usr/sbin/kea-lfc Px,
-  {{ kea_dist_bin_lfc }} Px,
+  {{ kea_lfc_bin_path }} Px,
 
   owner /run/kea/kea-dhcp6.kea-dhcp6.pid w,
   owner /run/lock/kea/logger_lockfile rwk,
@@ -39,8 +39,8 @@ profile kea-dhcp6 /usr/sbin/kea-dhcp6 {
   # locations
   owner /{tmp,run/kea}/kea6-ctrl-socket w,
   owner /{tmp,run/kea}/kea6-ctrl-socket.lock rwk,
-  owner {{ kea_run_dir }}/kea6-ctrl-socket w,
-  owner {{ kea_run_dir }}/kea6-ctrl-socket.lock rwk,
+  owner {{ kea_dhcp6_conf_control_socket_path }} w,
+  owner {{ kea_dhcp6_conf_control_socket_path }}.lock rwk,
 
   owner /var/lib/kea/kea-dhcp6-serverid rw,
   owner {{ kea_var_dir }}/kea-dhcp6-serverid rw,

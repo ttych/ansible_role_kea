@@ -2,7 +2,7 @@ abi <abi/3.0>,
 
 include <tunables/global>
 
-profile kea-ctrl-agent {{ kea_dist_bin_ctrl_agent }} {
+profile kea-ctrl-agent {{ kea_ctrl_agent_bin_path }} {
   include <abstractions/base>
 
   network inet stream,
@@ -13,7 +13,7 @@ profile kea-ctrl-agent {{ kea_dist_bin_ctrl_agent }} {
 
   {{ kea_conf_dir }}/ r,
   {{ kea_conf_dir }}/** r,
-  {{ kea_dist_bin_ctrl_agent }} mr,
+  {{ kea_ctrl_agent_bin_path }} mr,
 
   owner /run/kea/kea-ctrl-agent.kea-ctrl-agent.pid w,
   owner /run/lock/kea/logger_lockfile rwk,

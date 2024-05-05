@@ -37,10 +37,20 @@
             src: "{{ t_kea_dhcp4_conf_stat.stat.path }}"
           register: t_kea_dhcp4_conf_current
 
+        - name: kea-dhcp4 - set conf content
+          set_fact:
+            t_kea_dhcp4_conf_content: "{{ t_kea_dhcp4_conf_current ['content'] | b64decode | from_json | combine(kea_dhcp4_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+          ignore_errors: yes
+
+        - name: kea-dhcp4 - set conf content
+          set_fact:
+            t_kea_dhcp4_conf_content: "{{ kea_dhcp4_conf_base_content | to_json(indent=4) }}"
+          when: t_kea_dhcp4_conf_content is not defined
+
         - name: kea-dhcp4 - update current conf
           copy:
             dest: "{{ t_kea_dhcp4_conf_stat.stat.path }}"
-            content: "{{ t_kea_dhcp4_conf_current['content'] | b64decode | from_json | combine(kea_dhcp4_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+            content: "{{ t_kea_dhcp4_conf_content }}"
             owner: "{{ kea_admin_user | d('root') }}"
             group: "{{ kea_group }}"
             mode: "0640"
@@ -77,10 +87,20 @@
             src: "{{ t_kea_dhcp6_conf_stat.stat.path }}"
           register: t_kea_dhcp6_conf_current
 
+        - name: kea-dhcp6 - set conf content
+          set_fact:
+            t_kea_dhcp6_conf_content: "{{ t_kea_dhcp6_conf_current ['content'] | b64decode | from_json | combine(kea_dhcp6_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+          ignore_errors: yes
+
+        - name: kea-dhcp6 - set conf content
+          set_fact:
+            t_kea_dhcp6_conf_content: "{{ kea_dhcp6_conf_base_content | to_json(indent=4) }}"
+          when: t_kea_dhcp6_conf_content is not defined
+
         - name: kea_dhcp6 - update current conf
           copy:
             dest: "{{ t_kea_dhcp6_conf_stat.stat.path }}"
-            content: "{{ t_kea_dhcp6_conf_current['content'] | b64decode | from_json | combine(kea_dhcp6_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+            content: "{{ t_kea_dhcp6_conf_content }}"
             owner: "{{ kea_admin_user | d('root') }}"
             group: "{{ kea_group }}"
             mode: "0640"
@@ -117,10 +137,20 @@
             src: "{{ t_kea_dhcp_ddns_conf_stat.stat.path }}"
           register: t_kea_dhcp_ddns_conf_current
 
+        - name: kea_dhcp_ddns - set conf content
+          set_fact:
+            t_kea_dhcp_ddns_conf_content: "{{ t_kea_dhcp_ddns_conf_current | b64decode | from_json | combine(kea_dhcp_ddns_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+          ignore_errors: yes
+
+        - name: kea_dhcp_ddns - set conf content
+          set_fact:
+            t_kea_dhcp_ddns_conf_content: "{{ kea_dhcp_ddns_conf_base_content | to_json(indent=4) }}"
+          when: t_kea_dhcp_ddns_conf_content is not defined
+
         - name: kea_dhcp_ddns - update current conf
           copy:
             dest: "{{ t_kea_dhcp_ddns_conf_stat.stat.path }}"
-            content: "{{ t_kea_dhcp_ddns_conf_current['content'] | b64decode | from_json | combine(kea_dhcp_ddns_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+            content: "{{ t_kea_dhcp_ddns_conf_content }}"
             owner: "{{ kea_admin_user | d('root') }}"
             group: "{{ kea_group }}"
             mode: "0640"
@@ -157,10 +187,20 @@
             src: "{{ t_kea_ctrl_agent_conf_stat.stat.path }}"
           register: t_kea_ctrl_agent_conf_current
 
+        - name: kea-ctrl-agent - set conf content
+          set_fact:
+            t_kea_ctrl_agent_conf_content: "{{ t_kea_ctrl_agent_conf_current['content'] | b64decode | from_json | combine(kea_ctrl_agent_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+          ignore_errors: yes
+
+        - name: kea-ctrl-agent - set conf content
+          set_fact:
+            t_kea_ctrl_agent_conf_content: "{{ kea_ctrl_agent_conf_base_content | to_json(indent=4) }}"
+          when: t_kea_ctrl_agent_conf_content is not defined
+
         - name: kea-ctrl-agent - update current conf
           copy:
             dest: "{{ t_kea_ctrl_agent_conf_stat.stat.path }}"
-            content: "{{ t_kea_ctrl_agent_conf_current['content'] | b64decode | from_json | combine(kea_ctrl_agent_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+            content: "{{ t_kea_ctrl_agent_conf_content }}"
             owner: "{{ kea_admin_user | d('root') }}"
             group: "{{ kea_group }}"
             mode: "0640"
