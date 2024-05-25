@@ -135,20 +135,12 @@ kea_dhcp4_conf_option_data:
     data: "{{ kea_dhcp4_conf_option_data_domain_search }}"
   - name: default-ip-ttl
     data: "{{ kea_dhcp4_conf_option_data_default_ip_ttl }}"
-kea_dhcp4_conf_option_data_domain_name_servers: 192.168.0.10, 8.8.8.8
+kea_dhcp4_conf_option_data_domain_name_servers: 192.168.0.3, 8.8.8.8, 208.67.220.220, 9.9.9.9
 kea_dhcp4_conf_option_data_domain_name: local
 kea_dhcp4_conf_option_data_domain_search: local
 kea_dhcp4_conf_option_data_default_ip_ttl: "240"
 kea_dhcp4_conf_client_classes: []
 kea_dhcp4_conf_hooks_libraries: []
-kea_dhcp4_conf_subnet4:
-  - subnet: "{{ (kea_dhcp4_conf_interface_settings.network + '/' + kea_dhcp4_conf_interface_settings.netmask) | ansible.utils.ipaddr('network/prefix') }}"
-    pools:
-      - {"pool": "{{ kea_dhcp4_conf_interface_settings.network.split('.')[0:3] | join('.') }}.50 - {{ kea_dhcp4_conf_interface_settings.network.split('.')[0:3] | join('.') }}.250"}
-    option-data:
-      - name: routers
-        data: "{{ kea_dhcp4_conf_interface_settings.address }}"
-    reservations: []
 kea_dhcp4_conf_loggers: [ "{{ kea_dhcp4_conf_loggers_default }}" ]
 kea_dhcp4_conf_loggers_default:
   name: default

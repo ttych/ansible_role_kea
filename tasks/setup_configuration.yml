@@ -39,7 +39,7 @@
 
         - name: kea-dhcp4 - set conf content
           set_fact:
-            t_kea_dhcp4_conf_content: "{{ t_kea_dhcp4_conf_current ['content'] | b64decode | from_json | combine(kea_dhcp4_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+            t_kea_dhcp4_conf_content: "{{ t_kea_dhcp4_conf_current['content'] | b64decode | from_json | combine(kea_dhcp4_conf_base_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
           ignore_errors: yes
 
         - name: kea-dhcp4 - set conf content
