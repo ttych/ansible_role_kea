@@ -27,6 +27,11 @@ profile kea-lfc {{ kea_lfc_bin_path }} {
   owner {{ kea_run_dir }}/kea4-ctrl-socket rw,
   owner {{ kea_run_dir }}/kea6-ctrl-socket rw,
 
+  owner {{ kea_dhcp4_conf_control_socket_path }} rw,
+  owner {{ kea_dhcp4_conf_control_socket_path }}.lock r,
+  owner {{ kea_dhcp6_conf_control_socket_path }} rw,
+  owner {{ kea_dhcp6_conf_control_socket_path }}.lock r,
+
   # this includes .completed, .output, .pid, .[0-9]
   owner /var/lib/kea/kea-leases4.csv* rw,
 
