@@ -16,7 +16,7 @@ RuntimeDirectoryPreserve=yes
 LogsDirectory={{ kea_name }}
 LogsDirectoryMode=0750
 StateDirectory={{ kea_name }}
-ExecStart={{ kea_dhcp_ddns_bin_path }} -c "{{ kea_dhcp_ddns_conf_path }}"
+ExecStart={{ kea_ddns_bin_path }} -c "{{ kea_ddns_conf_path }}"
 
 [Install]
 WantedBy=kea-dhcp4-server.service

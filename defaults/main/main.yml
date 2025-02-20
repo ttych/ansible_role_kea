@@ -1,0 +1,7 @@
+---
+
+# documentation: https://kea.readthedocs.io/en/latest/index.html
+
+want_kea: no
+
+kea_name: kea

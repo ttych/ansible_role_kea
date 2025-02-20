@@ -1,0 +1,4 @@
+---
+
+kea_lfc_bin_name: kea-lfc
+kea_lfc_bin_path: "{{ kea_bin_path }}/{{ kea_lfc_bin_name }}"

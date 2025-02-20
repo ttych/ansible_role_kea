@@ -1,0 +1,40 @@
+---
+
+- name: "systemd restart kea ctrl-agent"
+  service:
+    name: "{{ kea_ctrl_agent_service_name }}"
+    state: restarted
+    daemon_reload: true
+  when:
+    - kea_ctrl_agent_service_enable
+    - not t_kea_ctrl_agent_service_start.changed
+
+
+- name: "systemd restart kea dhcp4"
+  service:
+    name: "{{ kea_dhcp4_service_name }}"
+    state: restarted
+    daemon_reload: true
+  when:
+    - kea_dhcp4_service_enable
+    - not t_kea_dhcp4_service_start.changed
+
+
+- name: "systemd restart kea dhcp6"
+  service:
+    name: "{{ kea_dhcp6_service_name }}"
+    state: restarted
+    daemon_reload: true
+  when:
+    - kea_dhcp6_service_enable
+    - not t_kea_dhcp6_service_start.changed
+
+
+- name: "systemd restart kea ddns"
+  service:
+    name: "{{ kea_ddns_service_name }}"
+    state: restarted
+    daemon_reload: true
+  when:
+    - kea_ddns_service_enable
+    - not t_kea_ddns_service_start.changed

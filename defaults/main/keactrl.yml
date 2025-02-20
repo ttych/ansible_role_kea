@@ -1,0 +1,12 @@
+---
+
+kea_keactrl_enable: no
+kea_keactrl_service_enable: "{{ kea_keactrl_enable }}"
+
+kea_keactrl_name: keactrl
+kea_keactrl_service_name: "{{ kea_keactrl_name }}"
+kea_keactrl_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_keactrl_service_name }}"
+kea_keactrl_bin_name: "{{ kea_keactrl_name }}"
+kea_keactrl_bin_path: "{{ kea_bin_path }}/{{ kea_keactrl_bin_name }}"
+kea_keactrl_conf_name: "{{ kea_keactrl_name }}.conf"
+kea_keactrl_conf_path: "{{ kea_conf_dir }}/{{ kea_keactrl_conf_name }}"

@@ -1,7 +1,0 @@
----
-
-# systemd
-- include_tasks: setup_service_systemd.yml
-
-# daemontools
-- include_tasks: setup_service_daemontools.yml

@@ -1,0 +1,32 @@
+---
+
+- block:
+
+    - include_tasks: apparmor.yml
+      vars:
+        _apparmor_profile_name: "{{ kea_dhcp4_bin_path | regex_replace('^/', '') | regex_replace('/', '.') }}"
+        _apparmor_local_profile: "apparmor/usr.sbin.{{ kea_dhcp4_bin_name }}.local"
+
+    - include_tasks: apparmor.yml
+      vars:
+        _apparmor_profile_name: "{{ kea_dhcp6_bin_path | regex_replace('^/', '') | regex_replace('/', '.') }}"
+        _apparmor_local_profile: "apparmor/usr.sbin.{{ kea_dhcp6_bin_name }}.local"
+
+    - include_tasks: apparmor.yml
+      vars:
+        _apparmor_profile_name: "{{ kea_ctrl_agent_bin_path | regex_replace('^/', '') | regex_replace('/', '.') }}"
+        _apparmor_local_profile: "apparmor/usr.sbin.{{ kea_ctrl_agent_bin_name }}.local"
+
+    - include_tasks: apparmor.yml
+      vars:
+        _apparmor_profile_name: "{{ kea_ddns_bin_path | regex_replace('^/', '') | regex_replace('/', '.') }}"
+        _apparmor_local_profile: "apparmor/usr.sbin.{{ kea_ddns_bin_name }}.local"
+
+    - include_tasks: apparmor.yml
+      vars:
+        _apparmor_profile_name: "{{ kea_lfc_bin_path | regex_replace('^/', '') | regex_replace('/', '.') }}"
+        _apparmor_local_profile: "apparmor/usr.sbin.{{ kea_lfc_bin_name }}.local"
+
+  when:
+    - ansible_apparmor | default(false)
+    - ansible_apparmor.status == 'enabled'

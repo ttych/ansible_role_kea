@@ -1,3 +1,5 @@
 ---
 
-kea_default_packages: kea
+apparmor_service: apparmor
+apparmor_d: "/etc/apparmor.d"
+apparmor_d_local: "{{ apparmor_d }}/local"

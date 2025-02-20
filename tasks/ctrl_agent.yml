@@ -1,0 +1,79 @@
+---
+
+- block:
+
+    - name: kea-ctrl-agent - generate content
+      set_fact:
+        kea_ctrl_agent_conf_generated_content: "{{ lookup('template', 'conf/' + kea_ctrl_agent_conf_name) }}"
+
+    - block:
+
+        - name: kea-ctrl-agent - stat current conf
+          stat:
+            path: "{{ kea_ctrl_agent_conf_path }}"
+          register: t_kea_ctrl_agent_conf_stat
+
+        - block:
+            - name: kea-ctrl-agent - load current conf
+              slurp:
+                src: "{{ t_kea_ctrl_agent_conf_stat.stat.path }}"
+              register: t_kea_ctrl_agent_conf_current
+
+            - name: kea-ctrl-agent - set conf content
+              set_fact:
+                t_kea_ctrl_agent_conf_content: "{{ t_kea_ctrl_agent_conf_current['content'] | b64decode | from_json | combine(kea_ctrl_agent_conf_generated_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+              ignore_errors: yes
+
+          when: t_kea_ctrl_agent_conf_stat.stat.exists
+
+      when: kea_ctrl_agent_conf_merge
+
+    - name: kea-ctrl-agent - set conf content
+      set_fact:
+        t_kea_ctrl_agent_conf_content: "{{ kea_ctrl_agent_conf_generated_content | to_json(indent=4) }}"
+      when: t_kea_ctrl_agent_conf_content is not defined
+
+    - name: kea-ctrl-agent - deploy conf
+      copy:
+        dest: "{{ kea_ctrl_agent_conf_path }}"
+        content: "{{ t_kea_ctrl_agent_conf_content }}"
+        owner: "{{ kea_admin_user | d('root') }}"
+        group: "{{ kea_group }}"
+        mode: "0640"
+      register: t_kea_ctrl_agent_conf
+      notify:
+        - "{{ kea_service_type }} restart kea ctrl-agent"
+
+
+    - include_tasks: ctrl_agent_password.yml
+      loop: "{{ kea_ctrl_agent_conf_clients }}"
+      vars:
+        _kea_ctrl_agent_client: "{{ item }}"
+
+  when: kea_ctrl_agent_enable
+
+
+
+- block:
+
+    - name: deploy kea ctrl_agent service
+      template:
+        src: "systemd/kea-ctrl-agent.service"
+        dest: "{{ systemd_system_lib_dir }}/{{ kea_ctrl_agent_service_name }}.service"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0644"
+      register: t_kea_ctrl_agent_service_conf
+      notify:
+        - "{{ kea_service_type }} restart kea ctrl-agent"
+
+    - name: activate kea ctrl_agent service
+      systemd:
+        name: "{{ kea_ctrl_agent_service_name }}.service"
+        enabled: "{{ kea_ctrl_agent_service_enable }}"
+        state: "{{ kea_ctrl_agent_service_enable | ternary('started', 'stopped') }}"
+        masked: no
+        daemon_reload: true
+      register: t_kea_ctrl_agent_service_start
+
+  when: kea_service_type == 'systemd'

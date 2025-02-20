@@ -1,0 +1,103 @@
+---
+
+kea_dhcp6_enable: yes
+kea_dhcp6_service_enable: "{{ kea_dhcp6_enable }}"
+
+kea_dhcp6_name: kea-dhcp6
+
+kea_dhcp6_bin_name: kea-dhcp6
+kea_dhcp6_bin_path: "{{ kea_bin_path }}/{{ kea_dhcp6_bin_name }}"
+
+kea_dhcp6_conf_name: "{{ kea_dhcp6_name }}.conf"
+kea_dhcp6_conf_path: "{{ kea_conf_dir }}/{{ kea_dhcp6_conf_name }}"
+
+kea_dhcp6_dispatch_service_name:
+  Ubuntu: "{{ kea_dhcp6_name }}-server"
+  Linux: "{{ kea_dhcp6_name }}"
+kea_dhcp6_service_name: "{{ kea_dhcp6_dispatch_service_name[ansible_distribution] | d(kea_dhcp6_dispatch_service_name[ansible_system]) }}"
+kea_dhcp6_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_dhcp6_service_name }}"
+
+
+kea_dhcp6_conf_merge: no
+
+kea_dhcp6_conf_interfaces: "{{ net_lan_interfaces | d([ansible_default_ipv6.interface | d(ansible_default_ipv4.interface)]) }}"
+
+kea_dhcp6_conf_control_socket_type: unix
+kea_dhcp6_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_dhcp6_name }}-ctrl-socket"
+
+kea_dhcp6_conf_lease_db_type: memfile
+kea_dhcp6_conf_lease_db_name: kea-leases6.csv
+kea_dhcp6_conf_lease_db_path: "{{ kea_db_dir }}/{{ kea_dhcp6_conf_lease_db_name }}"
+kea_dhcp6_conf_lease_db_lfc_interval: 3600
+
+kea_dhcp6_conf_expired_leases_proc_reclaim_timer_wait_time: 10
+kea_dhcp6_conf_expired_leases_proc_flush_reclaimed_timer_wait_time: 25
+kea_dhcp6_conf_expired_leases_proc_hold_reclaimed_time: 3600
+kea_dhcp6_conf_expired_leases_proc_max_reclaim_leases: 100
+kea_dhcp6_conf_expired_leases_proc_max_reclaim_time: 250
+kea_dhcp6_conf_expired_leases_proc_unwarned_reclaim_cycles: 5
+
+kea_dhcp6_conf_renew_timer: 21600
+kea_dhcp6_conf_rebind_timer: 43200
+kea_dhcp6_conf_preferred_lifetime: 64800
+kea_dhcp6_conf_valid_lifetime: 86400
+
+kea_dhcp6_conf_option_data_domain_name_servers: "{{ kea_ipv6_dns | join(', ') }}"
+kea_dhcp6_conf_option_data_domain_search: "{{ kea_domain }}"
+# doc: https://kea.readthedocs.io/en/kea-2.2.0/arm/dhcp6-srv.html#dhcp6-std-options-list
+kea_dhcp6_conf_option_data:
+  - name: dns-servers
+    code: 23
+    space: dhcp6
+    data: "{{ kea_dhcp6_conf_option_data_domain_name_servers }}"
+  - name: domain-search
+    code: 24
+    space: dhcp6
+    data: "{{ kea_dhcp6_conf_option_data_domain_search }}"
+
+kea_dhcp6_conf_client_classes: []
+
+kea_dhcp6_conf_hooks_libraries: []
+
+kea_dhcp6_conf_ddns_enable: "{{ kea_ddns_enable }}"
+kea_dhcp6_conf_ddns_server_ip: "{{ kea_ddns_conf_ip_address }}"
+kea_dhcp6_conf_ddns_server_port: "{{ kea_ddns_conf_port | int }}"
+kea_dhcp6_conf_ddns:
+  enable-updates: "{{ kea_dhcp6_conf_ddns_enable }}"
+  server-ip: "{{ kea_dhcp6_conf_ddns_server_ip }}"
+  # server-port: "{{ kea_dhcp6_conf_ddns_server_port | int }}"
+
+kea_dhcp6_conf_ddns_send_updates: "{{ kea_dhcp6_conf_ddns_enable }}"
+kea_dhcp6_conf_ddns_override_no_update: true
+kea_dhcp6_conf_ddns_override_client_update : true
+kea_dhcp6_conf_ddns_replace_client_name: "when-not-present"
+kea_dhcp6_conf_ddns_generated_prefix: "host"
+kea_dhcp6_conf_ddns_qualifying_suffix: "{{ kea_domain }}."
+kea_dhcp6_conf_ddns_update_on_renew: true
+kea_dhcp6_conf_ddns_use_conflict_resolution: false
+kea_dhcp6_conf_ddns_ttl_percent: 0.75
+kea_dhcp6_conf_ddns_hostname_char_set: "[^A-Za-z0-9.-]"
+kea_dhcp6_conf_ddns_hostname_char_replacement: "_"
+
+kea_dhcp6_log_file: "{{ kea_log_dir }}/{{ kea_dhcp6_name }}.log"
+kea_dhcp6_conf_loggers:
+  - name: "{{ kea_dhcp6_conf_loggers_1_name }}"
+    output_options: "{{ kea_dhcp6_conf_loggers_1_output_options }}"
+    severity: "{{ kea_dhcp6_conf_loggers_1_severity }}"
+    debuglevel: "{{ kea_dhcp6_conf_loggers_1_debuglevel }}"
+kea_dhcp6_conf_loggers_1_output_options:
+  - output: "{{ kea_dhcp6_conf_loggers_1_output }}"
+    pattern: "{{ kea_dhcp6_conf_loggers_1_pattern }}"
+    flush: "{{ kea_dhcp6_conf_loggers_1_flush }}"
+    maxsize: "{{ kea_dhcp6_conf_loggers_1_maxsize }}"
+    maxver: "{{ kea_dhcp6_conf_loggers_1_maxver }}"
+kea_dhcp6_conf_loggers_1_name: "{{ kea_dhcp6_name }}"
+kea_dhcp6_conf_loggers_1_output: "{{ kea_dhcp6_log_file }}"
+kea_dhcp6_conf_loggers_1_pattern: "%-5p %m\n"
+kea_dhcp6_conf_loggers_1_flush: false
+kea_dhcp6_conf_loggers_1_maxsize: 1048576
+kea_dhcp6_conf_loggers_1_maxver: 8
+kea_dhcp6_conf_loggers_1_severity: INFO
+kea_dhcp6_conf_loggers_1_debuglevel: 0
+
+kea_dhcp6_conf_subnet6: []

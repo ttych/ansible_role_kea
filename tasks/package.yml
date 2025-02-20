@@ -1,0 +1,16 @@
+---
+
+- block:
+
+    - name: install package
+      package:
+        name: "{{ kea_packages }}"
+        state: present
+      register: t_kea_install
+      notify:
+        - "{{ kea_service_type }} restart kea ctrl agent"
+        - "{{ kea_service_type }} restart kea dhcp4"
+        - "{{ kea_service_type }} restart kea dhcp6"
+        - "{{ kea_service_type }} restart kea ddns"
+
+  when: not kea_build_distribution

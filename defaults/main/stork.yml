@@ -1,0 +1,5 @@
+---
+
+### stork
+# kea_stork_repo: {{ isc_download_repo }}/stork
+# kea_stork_version: 1.11.0

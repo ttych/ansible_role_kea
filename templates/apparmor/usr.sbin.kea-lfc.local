@@ -1,0 +1,4 @@
+owner {{ kea_dhcp4_conf_control_socket_path }} r,
+owner {{ kea_dhcp4_conf_control_socket_path }}.lock r,
+owner {{ kea_dhcp6_conf_control_socket_path }} r,
+owner {{ kea_dhcp6_conf_control_socket_path }}.lock r,

@@ -1,0 +1,13 @@
+---
+
+- block:
+    - name: deploy keactrl.conf
+      template:
+        src: "conf/keactrl.conf"
+        dest: "{{ kea_keactrl_conf_path }}"
+        owner: "{{ kea_admin_user | d('root') }}"
+        group: "{{ kea_group }}"
+        mode: "0640"
+      register: t_kea_keactrl_conf
+
+  when: kea_keactrl_enable

@@ -1,0 +1,3 @@
+owner {{ kea_dhcp4_conf_control_socket_path }} rw,
+owner {{ kea_dhcp6_conf_control_socket_path }} rw,
+owner {{ kea_ddns_conf_control_socket_path }} rw,

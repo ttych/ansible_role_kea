@@ -3,17 +3,21 @@
 - block:
     - include_tasks: context.yml
 
-    - include_tasks: setup_vars.yml
+    - include_tasks: common.yml
 
-    - include_tasks: setup_workspace.yml
+    - include_tasks: package.yml
 
-    - include_tasks: setup_distribution.yml
+    - include_tasks: security.yml
 
-    - include_tasks: setup_configuration.yml
+    - include_tasks: dhcp4.yml
 
-    - include_tasks: setup_protection.yml
+    - include_tasks: dhcp6.yml
 
-    - include_tasks: setup_service.yml
+    - include_tasks: ddns.yml
+
+    - include_tasks: keactrl.yml
+
+    - include_tasks: ctrl_agent.yml
 
   when: want_kea
 

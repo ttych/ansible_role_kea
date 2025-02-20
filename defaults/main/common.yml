@@ -1,0 +1,99 @@
+---
+
+kea_user: "_{{ kea_name }}"
+kea_group: "_{{ kea_name }}"
+kea_home: "/home/{{ kea_user }}"
+kea_home_mode: '0700'
+kea_shell: /sbin/nologin
+kea_uid: 201
+kea_gid: "{{ kea_uid }}"
+
+kea_users:
+  - name: "{{ kea_user }}"
+    comment: "{{ kea_user | capitalize }}"
+    group: "{{ kea_group }}"
+    home: "{{ kea_home }}"
+    create_home: no
+    shell: "{{ kea_shell }}"
+    uid: "{{ kea_uid }}"
+    password: '*'
+
+kea_groups:
+  - name: "{{ kea_group }}"
+    gid: "{{ kea_gid }}"
+
+
+kea_conf_dir: "/etc/{{ kea_name }}"
+kea_log_dir: "/var/log/{{ kea_name }}"
+kea_var_dir: "{{ var_app_dir }}/{{ kea_name }}"
+kea_db_dir: "{{ var_app_dir }}/{{ kea_name }}"
+kea_run_dir: "{{ run_dir }}/{{ kea_name }}"
+kea_run_lock_dir: "{{ run_lock_dir }}/{{ kea_name }}"
+kea_service_dir: "{{ kea_home }}"
+
+kea_directories:
+  - path: "{{ kea_home }}"
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "{{ kea_home_mode | d('0750') }}"
+  - path: "{{ kea_conf_dir }}"
+    owner: root
+    group: "{{ kea_group }}"
+    mode: "{{ kea_conf_dir_mode | d('0750') }}"
+  - path: "{{ kea_log_dir }}"
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "{{ kea_log_dir_mode | d('0750') }}"
+  - path: "{{ kea_run_dir }}"
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "{{ kea_run_dir_mode | d('0755') }}"
+  - path: "{{ kea_run_lock_dir }}"
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "{{ kea_run_lock_dir_mode | d('0755') }}"
+  - path: "{{ kea_db_dir }}"
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "{{ kea_db_dir_mode | d('0750') }}"
+  - path: "{{ kea_var_dir }}"
+    owner: "{{ kea_user }}"
+    group: "{{ kea_group }}"
+    mode: "{{ kea_var_dir_mode | d('0750') }}"
+
+
+# dns
+kea_domain: local
+kea_ipv4_dns:
+  - 8.8.8.8    # Google DNS
+  - 8.8.4.4    # Google DNS
+  - 1.1.1.1    # Cloudflare DNS
+kea_ipv6_dns:
+  - 2001:4860:4860::8888   # Google pri
+  - 2001:4860:4860::8844   # Google sec
+  - 2606:4700:4700::1111   # Cloudflare pri
+  - 2606:4700:4700::1001   # Cloudflare sec
+  - 2620:119:35::35        # OpenDNS Cisco pri
+  - 2620:119:53::53        # OpenDNS Cisco sec
+  - 2620:fe::fe            # Quad9 pri
+  - 2620:fe::9             # Quad9 sec
+
+
+# package
+kea_build_distribution: no
+
+kea_dispatch_packages:
+  Linux:
+    - kea
+  Ubuntu:
+    - kea
+kea_packages: "{{ kea_dispatch_packages[ansible_distribution] | d(kea_dispatch_packages[ansible_system]) }}"
+
+kea_dispatch_bin_path:
+  Linux: /usr/sbin
+kea_bin_path: "{{ kea_dispatch_bin_path[ansible_distribution] | d(kea_dispatch_bin_path[ansible_system]) }}"
+
+
+# service
+kea_service_type: "{{ ansible_service_mgr }}"
+kea_verbose: no

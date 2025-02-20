@@ -1,0 +1,58 @@
+---
+
+kea_ddns_enable: no
+kea_ddns_service_enable: "{{ kea_ddns_enable }}"
+
+kea_ddns_name: kea-dhcp-ddns
+
+kea_ddns_bin_name: kea-dhcp-ddns
+kea_ddns_bin_path: "{{ kea_bin_path }}/{{ kea_ddns_bin_name }}"
+
+kea_ddns_conf_name: "{{ kea_ddns_name }}.conf"
+kea_ddns_conf_path: "{{ kea_conf_dir }}/{{ kea_ddns_conf_name }}"
+
+kea_ddns_dispatch_service_name:
+  Ubuntu: "{{ kea_ddns_name }}-server"
+  Linux: "{{ kea_ddns_name }}"
+kea_ddns_service_name: "{{ kea_ddns_dispatch_service_name[ansible_distribution] | d(kea_ddns_dispatch_service_name[ansible_system]) }}"
+kea_ddns_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_ddns_service_name }}"
+
+
+kea_ddns_conf_merge: no
+
+kea_ddns_conf_ip_address: "127.0.0.1"
+kea_ddns_conf_port: 53001
+
+kea_ddns_conf_control_socket_type: unix
+kea_ddns_conf_control_socket_path: "{{ kea_run_dir }}/{{ kea_ddns_name }}-ctrl-socket"
+
+kea_ddns_conf_tsig_keys: []
+
+kea_ddns_conf_forward_ddns:
+  ddns-domains: "{{ kea_ddns_conf_forward_ddns_domains | default([]) }}"
+kea_ddns_conf_forward_ddns_domains: []
+
+kea_ddns_conf_reverse_ddns:
+  ddns-domains : "{{ kea_ddns_conf_reverse_ddns_domains | default([]) }}"
+kea_ddns_conf_reverse_ddns_domains: []
+
+kea_ddns_log_file: "{{ kea_log_dir }}/{{ kea_ddns_name }}.log"
+kea_ddns_conf_loggers:
+  - name: "{{ kea_ddns_conf_loggers_1_name }}"
+    output_options: "{{ kea_ddns_conf_loggers_1_output_options }}"
+    severity: "{{ kea_ddns_conf_loggers_1_severity }}"
+    debuglevel: "{{ kea_ddns_conf_loggers_1_debuglevel }}"
+kea_ddns_conf_loggers_1_output_options:
+  - output: "{{ kea_ddns_conf_loggers_1_output }}"
+    pattern: "{{ kea_ddns_conf_loggers_1_pattern }}"
+    flush: "{{ kea_ddns_conf_loggers_1_flush }}"
+    maxsize: "{{ kea_ddns_conf_loggers_1_maxsize }}"
+    maxver: "{{ kea_ddns_conf_loggers_1_maxver }}"
+kea_ddns_conf_loggers_1_name: "{{ kea_ddns_name }}"
+kea_ddns_conf_loggers_1_output: "{{ kea_ddns_log_file }}"
+kea_ddns_conf_loggers_1_pattern: "%-5p %m\n"
+kea_ddns_conf_loggers_1_flush: false
+kea_ddns_conf_loggers_1_maxsize: 1048576
+kea_ddns_conf_loggers_1_maxver: 8
+kea_ddns_conf_loggers_1_severity: INFO
+kea_ddns_conf_loggers_1_debuglevel: 0

@@ -1,0 +1,2 @@
+owner {{ kea_dhcp4_conf_control_socket_path }} w,
+owner {{ kea_dhcp4_conf_control_socket_path }}.lock rwk,

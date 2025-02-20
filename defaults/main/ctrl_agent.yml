@@ -1,0 +1,55 @@
+---
+
+kea_ctrl_agent_enable: yes
+kea_ctrl_agent_service_enable: "{{ kea_ctrl_agent_enable }}"
+
+kea_ctrl_agent_name: kea-ctrl-agent
+
+kea_ctrl_agent_bin_name: kea-ctrl-agent
+kea_ctrl_agent_bin_path: "{{ kea_bin_path }}/{{ kea_ctrl_agent_bin_name }}"
+
+kea_ctrl_agent_conf_name: "{{ kea_ctrl_agent_name }}.conf"
+kea_ctrl_agent_conf_path: "{{ kea_conf_dir }}/{{ kea_ctrl_agent_conf_name }}"
+
+kea_ctrl_agent_dispatch_service_name:
+  Linux: "{{ kea_ctrl_agent_name }}"
+kea_ctrl_agent_service_name: "{{ kea_ctrl_agent_dispatch_service_name[ansible_distribution] | d(kea_ctrl_agent_dispatch_service_name[ansible_system]) }}"
+kea_ctrl_agent_daemontools_svscan_dir: "{{ kea_daemontools_svscan_dir }}/{{ kea_ctrl_agent_service_name }}"
+
+
+kea_ctrl_agent_conf_merge: no
+
+kea_ctrl_agent_conf_http_host: 127.0.0.1
+kea_ctrl_agent_conf_http_port: "8{{ kea_uid }}"
+
+kea_ctrl_agent_conf_client_kea_api:
+  user: "{{ kea_ctrl_agent_conf_client_kea_api_user }}"
+  password-file: "{{ kea_ctrl_agent_conf_client_kea_api_password_file }}"
+kea_ctrl_agent_conf_client_kea_api_user: kea-api
+kea_ctrl_agent_conf_client_kea_api_password_file: "{{ kea_ctrl_agent_conf_client_kea_api_user }}-password"
+
+kea_ctrl_agent_conf_clients:
+  - "{{ kea_ctrl_agent_conf_client_kea_api }}"
+
+kea_ctrl_agent_conf_hooks_libraries: []
+
+kea_ctrl_agent_log_file: "{{ kea_log_dir }}/{{ kea_ctrl_agent_name }}.log"
+kea_ctrl_agent_conf_loggers:
+  - name: "{{ kea_ctrl_agent_conf_loggers_1_name }}"
+    output_options: "{{ kea_ctrl_agent_conf_loggers_1_output_options }}"
+    severity: "{{ kea_ctrl_agent_conf_loggers_1_severity }}"
+    debuglevel: "{{ kea_ctrl_agent_conf_loggers_1_debuglevel }}"
+kea_ctrl_agent_conf_loggers_1_output_options:
+  - output: "{{ kea_ctrl_agent_conf_loggers_1_output }}"
+    pattern: "{{ kea_ctrl_agent_conf_loggers_1_pattern }}"
+    flush: "{{ kea_ctrl_agent_conf_loggers_1_flush }}"
+    maxsize: "{{ kea_ctrl_agent_conf_loggers_1_maxsize }}"
+    maxver: "{{ kea_ctrl_agent_conf_loggers_1_maxver }}"
+kea_ctrl_agent_conf_loggers_1_name: "{{ kea_ctrl_agent_name }}"
+kea_ctrl_agent_conf_loggers_1_output: "{{ kea_ctrl_agent_log_file }}"
+kea_ctrl_agent_conf_loggers_1_pattern: "%-5p %m\n"
+kea_ctrl_agent_conf_loggers_1_flush: false
+kea_ctrl_agent_conf_loggers_1_maxsize: 1048576
+kea_ctrl_agent_conf_loggers_1_maxver: 8
+kea_ctrl_agent_conf_loggers_1_severity: INFO
+kea_ctrl_agent_conf_loggers_1_debuglevel: 0

@@ -1,0 +1,4 @@
+---
+
+### daemontools
+kea_daemontools_svscan_dir: "{{ kea_service_dir }}/{{ daemontools_svscan_name }}"

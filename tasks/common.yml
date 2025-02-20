@@ -1,0 +1,11 @@
+---
+
+- include_tasks: accounts.yml
+  vars:
+    accounts_groups: "{{ kea_groups }}"
+    accounts_users: "{{ kea_users }}"
+
+
+- include_tasks: directory_tree.yml
+  vars:
+    directory_tree: "{{ kea_directories }}"

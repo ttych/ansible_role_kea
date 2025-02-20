@@ -1,0 +1,73 @@
+---
+
+- block:
+
+    - name: kea-dhcp4 - generate content
+      set_fact:
+        kea_dhcp4_conf_generated_content: "{{ lookup('template', 'conf/' + kea_dhcp4_conf_name) }}"
+
+    - block:
+
+        - name: kea-dhcp4 - stat current conf
+          stat:
+            path: "{{ kea_dhcp4_conf_path }}"
+          register: t_kea_dhcp4_conf_stat
+
+        - block:
+            - name: kea-dhcp4 - load current conf
+              slurp:
+                src: "{{ t_kea_dhcp4_conf_stat.stat.path }}"
+              register: t_kea_dhcp4_conf_current
+
+            - name: kea-dhcp4 - set conf content
+              set_fact:
+                t_kea_dhcp4_conf_content: "{{ t_kea_dhcp4_conf_current['content'] | b64decode | from_json | combine(kea_dhcp4_conf_generated_content, list_merge='append_rp', recursive='true') | to_json(indent=4) }}"
+              ignore_errors: yes
+
+          when: t_kea_dhcp4_conf_stat.stat.exists
+
+      when: kea_dhcp4_conf_merge
+
+    - name: kea-dhcp4 - set conf content
+      set_fact:
+        t_kea_dhcp4_conf_content: "{{ kea_dhcp4_conf_generated_content | to_json(indent=4) }}"
+      when: t_kea_dhcp4_conf_content is not defined
+
+    - name: kea-dhcp4 - deploy conf
+      copy:
+        dest: "{{ kea_dhcp4_conf_path }}"
+        content: "{{ t_kea_dhcp4_conf_content }}"
+        owner: "{{ kea_admin_user | d('root') }}"
+        group: "{{ kea_group }}"
+        mode: "0640"
+      register: t_kea_dhcp4_conf
+      notify:
+        - "{{ kea_service_type }} restart kea dhcp4"
+
+  when: kea_dhcp4_enable
+
+
+
+- block:
+
+    - name: deploy kea dhcp4 service
+      template:
+        src: "systemd/kea-dhcp4.service"
+        dest: "{{ systemd_system_lib_dir }}/{{ kea_dhcp4_service_name }}.service"
+        owner: "{{ root }}"
+        group: "{{ root_group }}"
+        mode: "0644"
+      register: t_kea_dhcp4_service_conf
+      notify:
+        - "{{ kea_service_type }} restart kea dhcp4"
+
+    - name: activate kea dhcp4 service
+      systemd:
+        name: "{{ kea_dhcp4_service_name }}.service"
+        enabled: "{{ kea_dhcp4_service_enable }}"
+        state: "{{ kea_dhcp4_service_enable | ternary('started', 'stopped') }}"
+        masked: no
+        daemon_reload: true
+      register: t_kea_dhcp4_service_start
+
+  when: kea_service_type == 'systemd'

@@ -21,6 +21,3 @@ path_defaults:
   - /usr/sbin
 
 path_package_base: /usr
-
-apparmor_service_name: apparmor
-apparmor_d_dir: /etc/apparmor.d

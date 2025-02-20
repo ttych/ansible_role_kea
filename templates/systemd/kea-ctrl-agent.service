@@ -2,7 +2,7 @@
 Description=Kea Control Agent
 Documentation=man:kea-ctrl-agent(8)
 After=network-online.target time-sync.target
-ConditionFileNotEmpty={{ kea_ctrl_agent_conf_password_file_path }}
+# ConditionFileNotEmpty=
 
 [Service]
 User={{ kea_user }}
